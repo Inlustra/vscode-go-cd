@@ -21,7 +21,7 @@
         "title": "Go CD: Set Global Config"
       }
     ],
-    "configuration":{
+    "configuration": {
       "type": "object",
       "title": "Go CD Pipeline Configuration",
       "properties": {
@@ -44,6 +44,11 @@
           "type": "string",
           "default": null,
           "description": "The pipeline to display the short information for in the status bar."
+        },
+        "goCdPipelines.refreshInterval": {
+          "type": "number",
+          "default": 5000,
+          "description": "The amount of time between refreshing the pipeline info"
         }
       }
     }

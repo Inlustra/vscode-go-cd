@@ -1,3 +1,4 @@
+import { configuration } from '../configuration';
 import { ConfigurationKeys } from '../constants/configuration-keys.const';
 import * as vscode from 'vscode';
 
@@ -10,6 +11,7 @@ export default function showUsernameInput(global: boolean = true) {
         value: config.get<string>(ConfigurationKeys.USERNAME),
         ignoreFocusOut: true
     }).then((value) => {
-        config.update(ConfigurationKeys.USERNAME, value, global);
+        console.log('v', value);
+        configuration.setUsername(value, global);
     });
 }

@@ -3,5 +3,6 @@ export const ConfigurationKeys = {
     URL: 'url',
     USERNAME: 'username',
     PASSWORD: 'password',
-    PIPELINE: 'pipeline'
+    PIPELINE: 'pipeline',
+    REFRESH_INTERVAL: 'refreshInterval'
 }

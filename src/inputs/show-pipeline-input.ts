@@ -1,3 +1,4 @@
+import { configuration } from '../configuration';
 import { ShortPipelineInfo } from '../models/short-pipeline-info';
 import { Pipeline } from '../gocd-api/models/pipeline.model';
 import { ConfigurationKeys } from '../constants/configuration-keys.const';
@@ -13,5 +14,7 @@ export default function showPipelineInput(pipelines: ShortPipelineInfo[], global
             detail: pipeline.stages.map(stage => stage.name).join(' -> ')
         })), {
             ignoreFocusOut: true
+        }).then(({ label, description, detail }) => {
+            configuration.setPipeline(label, global);
         });
 }

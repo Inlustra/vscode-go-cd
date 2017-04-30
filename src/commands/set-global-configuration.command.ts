@@ -11,7 +11,7 @@ export default function SetGlobalConfiguration() {
         .then(() => Inputs.showUsernameInput(true))
         .then(() => Inputs.showPasswordInput(true))
         .then(() => GoCd.reinitialise())
-        .then(() => GoCd.getPipelines())
+        .then(() => GoCd.getPipelines().toPromise())
         .then((pipelines) => Inputs.showPipelineInput(pipelines, true))
 
 };

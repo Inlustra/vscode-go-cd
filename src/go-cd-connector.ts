@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs/Rx';
 import { PipelineStage } from './gocd-api/models/pipeline-stage.model';
 import { Pipeline } from './gocd-api/models/pipeline.model';
 import { PipelineInstance } from './gocd-api/models/pipeline-instance.model';
@@ -17,22 +18,23 @@ class GoCdConnector {
     return GoCdConnector._instance;
   }
 
-  api?: any;
   url: string;
   username?: string;
   password?: string;
+  pipeline?: string;
 
   reinitialise() {
     this.url = config.get<string>(ConfigurationKeys.URL);
     this.username = config.get<string>(ConfigurationKeys.USERNAME);
     this.password = config.get<string>(ConfigurationKeys.PASSWORD);
+    this.pipeline = config.get<string>(ConfigurationKeys.PIPELINE);
   }
 
-  getPipelines(): Thenable<ShortPipelineInfo[]> {
+  getPipelines(): Observable<ShortPipelineInfo[]> {
     return GoCdApi.getPipelines(this.url, this.username, this.password)
       .map(pipelines =>
         pipelines.map(pipeline => this.pipelineToShortPipelineInfo(pipeline))
-      ).toPromise();
+      );
   }
 
   private pipelineToShortPipelineInfo(pipeline: Pipeline): ShortPipelineInfo {
@@ -50,7 +52,6 @@ class GoCdConnector {
     }
     return shortInfo;
   }
-
 
 }
 
