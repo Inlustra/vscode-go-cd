@@ -1,45 +1,52 @@
 import { PipelineHistory } from './models/pipeline-history.model';
 import { Pipeline } from './models/pipeline.model';
 import { PipelineGroup } from './models/pipeline-group.model';
-import { Observable } from 'rxjs/Rx';
-import { RequestOptions } from 'https';
-import { RxHttpRequest } from 'rx-http-request';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax';
 
-export default class GoCdApi {
+export namespace GoCdApi {
 
-    private static getRequestOptions(headers: boolean = true, username?, password?) {
-        const options: any = {
-            json: true
-        }
-        if (headers) {
-            options.headers = {
+
+    export function getPipelineGroups(host: string, username?: string, password?: string): Observable<PipelineGroup[]> {
+        return ajax({
+            url: `${host}api/dashboard`,
+            method: 'GET',
+            async: true,
+            user: username,
+            password: password,
+            crossDomain: false,
+            headers: {
                 'Accept': 'application/vnd.go.cd.v1+json'
             }
-        }
-        if (username && password) {
-            options.auth = password ?
-                username : `${username}:${password}`
-        }
-        return options;
+        }).pipe(
+            map(value => value.response as any), // TODO look at the models and make sure they're correct
+            map(pipeline => pipeline._embedded.pipeline_groups as PipelineGroup[])
+        );
     }
 
-    static getPipelineGroups(host: string, username?: string, password?: string): Observable<PipelineGroup[]> {
-        return RxHttpRequest.get(host + 'api/dashboard', this.getRequestOptions(true, username, password))
-            .map(value => value.body._embedded.pipeline_groups as PipelineGroup[])
+    export function getPipelines(host: string, username?: string, password?: string): Observable<Pipeline[]> {
+        return getPipelineGroups(host, username, password)
+            .pipe(
+                map(pipelineGroups => pipelineGroups && pipelineGroups
+                    .map(pipeline => pipeline._embedded.pipelines)
+                    .reduce((previousValue = [], currentPipelines) => previousValue.concat(currentPipelines))
+                ));
     }
 
-    static getPipelines(host: string, username?: string, password?: string): Observable<Pipeline[]> {
-        return this.getPipelineGroups(host, username, password)
-            .map(pipelineGroups => pipelineGroups
-                .map(pipeline => pipeline._embedded.pipelines)
-                .reduce((previousValue = [], currentPipelines) => previousValue.concat(currentPipelines))
-            )
-    }
-
-    static getPipeline(name: string, host: string, username?: string, password?: string): Observable<PipelineHistory[]> {
-        return RxHttpRequest.get(`${host}api/pipelines/${name}/history`, this.getRequestOptions(false, username, password))
-            .map(value => value.response.body)
-            .map(value => value.pipelines as PipelineHistory[])
+    export function getPipeline(name: string, host: string, username?: string, password?: string): Observable<PipelineHistory[]> {
+        return ajax({
+            url: `${host}api/pipelines/${name}/history`,
+            method: 'GET',
+            async: true,
+            user: username,
+            password: password,
+            headers: {
+                'Accept': 'application/vnd.go.cd.v1+json'
+            }
+        }).pipe(
+            map(value => value.response)
+        );
     }
 
 }

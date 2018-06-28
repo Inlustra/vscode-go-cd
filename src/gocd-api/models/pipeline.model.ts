@@ -7,10 +7,10 @@ export interface Pipeline {
         paused: boolean;
         paused_by?: string;
         pause_reason?: string;
-    },
+    };
     _embedded: {
         instances: PipelineInstance[];
-    }
+    };
     _links: {
         self: Link;
         doc: Link;
@@ -19,6 +19,6 @@ export interface Pipeline {
         trigger_with_options: Link;
         pause: Link;
         unpause: Link;
-    }
+    };
 }
 

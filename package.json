@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "publisher": "inlustra",
   "engines": {
-    "vscode": "^1.11.0"
+    "vscode": "^1.23.0"
   },
   "categories": [
     "Other"
@@ -25,27 +25,27 @@
       "type": "object",
       "title": "Go CD Pipeline Configuration",
       "properties": {
-        "goCdPipelines.url": {
+        "gocd.url": {
           "type": "string",
           "default": null,
           "description": "The base URL for the Go CD Pipeline requests"
         },
-        "goCdPipelines.username": {
+        "gocd.username": {
           "type": "string",
           "default": null,
           "description": "The username for the Go CD Pipelines requests"
         },
-        "goCdPipelines.password": {
+        "gocd.password": {
           "type": "string",
           "default": null,
           "description": "The password for the Go CD Pipelines requests"
         },
-        "goCdPipelines.pipeline": {
+        "gocd.pipeline": {
           "type": "string",
           "default": null,
           "description": "The pipeline to display the short information for in the status bar."
         },
-        "goCdPipelines.refreshInterval": {
+        "gocd.refreshInterval": {
           "type": "number",
           "default": 5000,
           "description": "The amount of time between refreshing the pipeline info"
@@ -64,11 +64,13 @@
     "@types/node": "^6.0.40",
     "@types/request-promise-native": "^1.0.3",
     "mocha": "^2.3.3",
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0"
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1",
+    "vscode": "^1.1.6"
   },
   "dependencies": {
-    "rx-http-request": "^1.2.0",
-    "rxjs": "^5.3.0"
+    "@akanass/rx-http-request": "^3.0.0",
+    "rxjs": "^6.2.0",
+    "rxjs-tslint": "^0.1.4"
   }
 }

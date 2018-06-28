@@ -1,5 +1,5 @@
 export const ConfigurationKeys = {
-    SECTION: 'goCdPipelines',
+    SECTION: 'gocd',
     URL: 'url',
     USERNAME: 'username',
     PASSWORD: 'password',
