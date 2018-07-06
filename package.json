@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "publisher": "inlustra",
   "engines": {
-    "vscode": "^1.23.0"
+    "vscode": "^1.25.0"
   },
   "categories": [
     "Other"
@@ -62,14 +62,13 @@
   "devDependencies": {
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
-    "@types/request-promise-native": "^1.0.3",
     "mocha": "^2.3.3",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1",
+    "typescript": "^2.9.2",
     "vscode": "^1.1.6"
   },
   "dependencies": {
-    "@akanass/rx-http-request": "^3.0.0",
+    "request-promise-native": "^1.0.5",
     "rxjs": "^6.2.0",
     "rxjs-tslint": "^0.1.4"
   }

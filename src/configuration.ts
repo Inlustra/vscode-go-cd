@@ -2,7 +2,7 @@ import { GoCdConfiguration } from './models/go-cd-config.model';
 import * as vscode from 'vscode';
 import { ConfigurationKeys } from './constants/configuration-keys.const';
 import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged, map, tap } from 'rxjs/operators';
 
 export namespace Configuration {
 
@@ -22,7 +22,7 @@ export namespace Configuration {
     );
 
     export function setUrl(url: string, global: boolean = true) {
-        vscodeConfig.update(ConfigurationKeys.URL, url, global)
+        vscodeConfig.update(ConfigurationKeys.URL, url.replace(/\/$/, ""), global)
             .then(() => url$.next(url));
     }
 

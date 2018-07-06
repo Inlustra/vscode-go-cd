@@ -1,31 +1,38 @@
 import { PipelineHistory } from './models/pipeline-history.model';
 import { Pipeline } from './models/pipeline.model';
 import { PipelineGroup } from './models/pipeline-group.model';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
+import { Observable ,  from } from 'rxjs';
+import { map, flatMap, tap } from 'rxjs/operators';
+import * as request from 'request-promise-native';
 
 export namespace GoCdApi {
 
+    function performFetch(url: string, method?: string, body?: any, username?: string, password?: string) {
+        const headers: any = {'Accept' : 'application/vnd.go.cd.v1+json'};
+        console.log();
+        console.log(url);
+        console.log(method);
+        console.log(body);
+        console.log(username);
+        console.log(password);
+        console.log();
+        return from(request(url, {
+            method,
+            headers,
+            json: true,
+        }));
+    }
+
 
     export function getPipelineGroups(host: string, username?: string, password?: string): Observable<PipelineGroup[]> {
-        return ajax({
-            url: `${host}api/dashboard`,
-            method: 'GET',
-            async: true,
-            user: username,
-            password: password,
-            crossDomain: false,
-            headers: {
-                'Accept': 'application/vnd.go.cd.v1+json'
-            }
-        }).pipe(
-            map(value => value.response as any), // TODO look at the models and make sure they're correct
+        return performFetch(`${host}/api/dashboard`, 'GET', undefined, username, password)
+        .pipe(
             map(pipeline => pipeline._embedded.pipeline_groups as PipelineGroup[])
         );
     }
 
     export function getPipelines(host: string, username?: string, password?: string): Observable<Pipeline[]> {
+        console.log('Getting Pipelines!');
         return getPipelineGroups(host, username, password)
             .pipe(
                 map(pipelineGroups => pipelineGroups && pipelineGroups
@@ -35,18 +42,7 @@ export namespace GoCdApi {
     }
 
     export function getPipeline(name: string, host: string, username?: string, password?: string): Observable<PipelineHistory[]> {
-        return ajax({
-            url: `${host}api/pipelines/${name}/history`,
-            method: 'GET',
-            async: true,
-            user: username,
-            password: password,
-            headers: {
-                'Accept': 'application/vnd.go.cd.v1+json'
-            }
-        }).pipe(
-            map(value => value.response)
-        );
+        return performFetch(`${host}/api/pipelines/${name}/history`, 'GET', undefined, username, password);
     }
 
 }
