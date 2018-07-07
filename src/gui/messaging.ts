@@ -34,12 +34,7 @@ export namespace Messaging {
     ...options: Messaging.ButtonAction[]
   ) {
     const buttons = options.map(option => option.title);
-    console.log(buttons);
-    return Messaging.showError(
-      err,
-      title,
-      ...buttons
-    ).then(button => {
+    return Messaging.showError(err, title, ...buttons).then(button => {
       const option = options.find(option => option.title === button);
       if (option && option.onClick) {
         option.onClick();

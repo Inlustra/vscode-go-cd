@@ -9,7 +9,8 @@ import {
   withLatestFrom,
   catchError,
   exhaustMap,
-  observeOn
+  observeOn,
+  share
 } from 'rxjs/operators';
 import { Configuration } from './configuration';
 import { GoCdApi } from './gocd-api';
@@ -26,33 +27,48 @@ export namespace GoCdVscode {
     switchMap(config =>
       merge(
         forceRefresh.pipe(tap(() => console.log('Forced Refresh'))),
-        interval(config.refreshInterval).pipe(
+        interval(Math.max(config.refreshInterval, 1000)).pipe(
           tap(() => console.log('Regular Refresh'))
         )
-      ).pipe(
-        mapTo(config)
-      )
+      ).pipe(mapTo(config))
     ),
     skipWhile(() => paused),
-    tap(() => console.log('out!'))
+    tap(() => console.log('out!')),
+    share()
   );
 
-  export const pipelines$ = configuration$.pipe(
+  export const pipelineGroups$ = configuration$.pipe(
     observeOn(asapScheduler),
     exhaustMap(({ url, username, password }) =>
-      GoCdApi.getPipelines(url, username, password).pipe(tap(() => console.log('Done')))
+      GoCdApi.getPipelineGroups(url, username, password)
     ),
+    share()
+  );
+
+  export const pipelines$ = pipelineGroups$.pipe(
+    map(
+      pipelineGroups =>
+        pipelineGroups &&
+        pipelineGroups
+          .map(pipeline => pipeline._embedded.pipelines)
+          .reduce((previousValue = [], currentPipelines) =>
+            previousValue.concat(currentPipelines)
+          )
+    ),
+    share()
   );
 
   export const shortPipelineInfo$ = pipelines$.pipe(
     map(pipelines => pipelines.map(pipelineToShortPipelineInfo)),
+    share()
   );
 
   export const selectedPipeline$ = pipelines$.pipe(
     withLatestFrom(configuration$),
     map(([pipelines, config]) =>
       pipelines.find(pipeline => pipeline.name === config.pipeline)
-    )
+    ),
+    share()
   );
 
   export function getPipeline$(name: string) {

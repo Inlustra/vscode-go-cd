@@ -4,6 +4,7 @@
   "description": "Provides information about the current status of your Go CD pipelines",
   "version": "0.0.1",
   "publisher": "inlustra",
+  "enableProposedApi": true,
   "engines": {
     "vscode": "^1.25.0"
   },
@@ -15,10 +16,31 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "viewContainers": {
+      "activitybar": [
+        {
+          "id": "goCdView",
+          "title": "GoCD Pipelines",
+          "icon": "assets/gocd.svg"
+        }
+      ]
+    },
+    "views": {
+      "goCdView": [
+        {
+          "id": "goCdPipelines",
+          "name": "Pipeline Groups"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "goCdPipelines.setGlobalConfig",
         "title": "Go CD: Set Global Config"
+      },
+      {
+        "command": "goCdPipelines.forceRefresh",
+        "title": "Go CD: Force Refresh"
       }
     ],
     "configuration": {

@@ -12,7 +12,7 @@ export namespace Configuration {
     export const password$ = new BehaviorSubject<string>(vscodeConfig.get<string>(ConfigurationKeys.PASSWORD) || '');
     export const pipeline$ = new BehaviorSubject<string>(vscodeConfig.get<string>(ConfigurationKeys.PIPELINE) || '');
     export const refreshInterval$ = new BehaviorSubject<number>(vscodeConfig.get<number>(ConfigurationKeys.REFRESH_INTERVAL) || 5000);
-    
+
     export const all$: Observable<GoCdConfiguration> = combineLatest(
         url$, username$, password$, pipeline$, refreshInterval$
     ).pipe(
