@@ -6,6 +6,6 @@ export class GoCdTreeView {
     private provider: vscode.TreeDataProvider<any> = new PipelineNodeProvider();
 
     init() {
-        vscode.window.registerTreeDataProvider('goCdPipelines', this.provider);   
+        vscode.window.registerTreeDataProvider('go-cd-pipelines', this.provider);   
     }
 }

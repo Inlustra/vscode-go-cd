@@ -16,19 +16,19 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
-    "viewContainers": {
+    "viewsContainers": {
       "activitybar": [
         {
-          "id": "goCdView",
-          "title": "GoCD Pipelines",
+          "id": "go-cd-view",
+          "title": "GoCD",
           "icon": "assets/gocd.svg"
         }
       ]
     },
     "views": {
-      "goCdView": [
+      "go-cd-view": [
         {
-          "id": "goCdPipelines",
+          "id": "go-cd-pipelines",
           "name": "Pipeline Groups"
         }
       ]

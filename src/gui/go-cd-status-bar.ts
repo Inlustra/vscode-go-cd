@@ -10,7 +10,9 @@ export class GoCdStatusBar {
     0
   );
 
-  constructor() {
+  constructor() {}
+
+  init() {
     GoCdVscode.selectedPipeline$
       .pipe(
         filter(pipeline => !!pipeline),
@@ -23,8 +25,6 @@ export class GoCdStatusBar {
   }
 
   resetStatus(pipeline?: Pipeline) {
-    console.log('Setting status!');
-    console.log(pipeline);
     const lastInstance =
       pipeline && pipeline._embedded.instances.slice(-1).pop();
     const lastRunStage =
@@ -48,7 +48,8 @@ export class GoCdStatusBar {
         this.statusBar.text = '$(watch)';
         this.statusBar.text += pipeline.name + 'paused';
       } else {
-        this.statusBar.text += pipeline.name + (lastInstance && ' - ' + lastInstance.label);
+        this.statusBar.text +=
+          pipeline.name + (lastInstance && ' - ' + lastInstance.label);
       }
       this.statusBar.show();
     }

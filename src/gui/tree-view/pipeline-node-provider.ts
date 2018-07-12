@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { Pipeline } from '../../gocd-api/models/pipeline.model';
 import { GoCdVscode } from '../../gocd-vscode';
-import { distinctUntilChanged, first, map } from 'rxjs/operators';
+import { distinctUntilChanged, first, map, tap } from 'rxjs/operators';
 import { PipelineGroup } from '../../gocd-api/models/pipeline-group.model';
 
 export class PipelineNodeProvider
@@ -13,9 +13,9 @@ export class PipelineNodeProvider
     ._onDidChangeTreeData.event;
 
   constructor() {
-    GoCdVscode.pipelines$
+    GoCdVscode.pipelineGroups$
       .pipe(distinctUntilChanged())
-      .subscribe(() => this._onDidChangeTreeData.fire());
+      .subscribe(() => console.log('fired!') || this._onDidChangeTreeData.fire());
   }
 
   getTreeItem(
@@ -27,26 +27,20 @@ export class PipelineNodeProvider
   getChildren(
     element?: GoCdTreeItem | undefined
   ): vscode.ProviderResult<PipelineGroupItem[] | PipelineItem[]> {
-    if (element === undefined) {
+    if (!element) {
       return GoCdVscode.pipelineGroups$
         .pipe(
           first(),
-          map(group => group.map(this.groupToGroupItem))
+          map(group => group.map(group => new PipelineGroupItem(group)))
         )
         .toPromise();
     } else if (element instanceof PipelineGroupItem) {
-      return element.group._embedded.pipelines.map(this.pipelineToPipelineItem);
+      return element.group._embedded.pipelines.map(
+        pipeline => new PipelineItem(pipeline)
+      );
     } else if (element instanceof PipelineItem) {
-      return null;
+      return [];
     }
-  }
-
-  groupToGroupItem(group: PipelineGroup): PipelineGroupItem {
-    return new PipelineGroupItem(group);
-  }
-
-  pipelineToPipelineItem(pipeline: Pipeline): PipelineItem {
-    return new PipelineItem(pipeline);
   }
 }
 
@@ -60,6 +54,6 @@ class PipelineGroupItem extends vscode.TreeItem {
 
 class PipelineItem extends vscode.TreeItem {
   constructor(public pipeline: Pipeline) {
-    super(pipeline.name, vscode.TreeItemCollapsibleState.Collapsed);
+    super(pipeline.name, vscode.TreeItemCollapsibleState.None);
   }
 }
