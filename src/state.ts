@@ -38,7 +38,6 @@ export namespace State {
   )
 
   export const pipelineGroups$ = configuration$.pipe(
-    observeOn(asapScheduler),
     exhaustMap(({ url, username, password }) =>
       GoCdApi.getPipelineGroups(url, username, password)
     ),

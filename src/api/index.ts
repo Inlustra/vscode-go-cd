@@ -1,8 +1,8 @@
 import { PipelineHistory } from './models/pipeline-history.model'
 import { Pipeline } from './models/pipeline.model'
 import { PipelineGroup } from './models/pipeline-group.model'
-import { Observable, from } from 'rxjs'
-import { map, flatMap, tap } from 'rxjs/operators'
+import { Observable, from, asapScheduler } from 'rxjs'
+import { map, flatMap, tap, observeOn } from 'rxjs/operators'
 import * as request from 'request-promise-native'
 
 export namespace GoCdApi {
@@ -27,7 +27,7 @@ export namespace GoCdApi {
         headers,
         json: true
       })
-    )
+    ).pipe(observeOn(asapScheduler))
   }
 
   export function getPipelineGroups(
