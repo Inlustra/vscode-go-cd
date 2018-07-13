@@ -1,8 +1,9 @@
 import { PipelineHistory } from '../gocd-api/models/pipeline-history.model'
 import * as vscode from 'vscode'
 import { GoCdVscode } from '../gocd-vscode'
-import { map, filter, last } from 'rxjs/operators'
+import { map, filter } from 'rxjs/operators'
 import { Pipeline } from '../gocd-api/models/pipeline.model'
+import { PipelineGroup } from '../gocd-api/models/pipeline-group.model';
 
 export class GoCdStatusBar {
   statusBar = vscode.window.createStatusBarItem(

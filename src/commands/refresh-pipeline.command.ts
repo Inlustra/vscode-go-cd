@@ -3,10 +3,6 @@ import * as vscode from 'vscode'
 import { first, tap } from 'rxjs/operators'
 
 export default function ForceRefresh() {
-  const refresh$ = GoCdVscode.pipelines$.pipe(
-    first(),
-    tap(() => console.log('Done force'))
-  )
-  vscode.window.setStatusBarMessage('Refreshing Go CD', refresh$.toPromise())
+  const refresh$ = GoCdVscode.pipelines$.pipe(first())
   GoCdVscode.forceRefresh.next()
 }

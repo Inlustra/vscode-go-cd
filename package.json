@@ -84,6 +84,7 @@
   "devDependencies": {
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
+    "@types/request-promise-native": "^1.0.15",
     "mocha": "^2.3.3",
     "tslint": "^5.8.0",
     "typescript": "^2.9.2",

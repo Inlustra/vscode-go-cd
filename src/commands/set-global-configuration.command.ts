@@ -1,12 +1,15 @@
-import { Inputs } from '../gui/inputs'
 import { showErrorAlert } from '../gui/alerts/show-error-alert'
 import { RESET_GLOBAL_CONFIG, OK } from '../gui/alerts/named-actions'
+import showPipelineInput from '../gui/inputs/show-pipeline-input'
+import showPasswordInput from '../gui/inputs/show-password-input'
+import showUsernameInput from '../gui/inputs/show-username-input'
+import showUrlInput from '../gui/inputs/show-url-input'
 
 export default function SetGlobalConfiguration() {
-  Inputs.showUrlInput(true)
-    .then(() => Inputs.showUsernameInput(true))
-    .then(() => Inputs.showPasswordInput(true))
-    .then(() => Inputs.showPipelineInput(true))
+  showUrlInput(true)
+    .then(() => showUsernameInput(true))
+    .then(() => showPasswordInput(true))
+    .then(() => showPipelineInput(true))
     .then(
       () => {},
       err => {
