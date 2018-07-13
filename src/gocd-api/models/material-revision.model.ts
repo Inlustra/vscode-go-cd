@@ -1,8 +1,8 @@
-import { Material } from './material.model';
-import { Modification } from './modification.model';
+import { Material } from './material.model'
+import { Modification } from './modification.model'
 
 export interface MaterialRevision {
-    modifications: Modification[];
-    material: Material;
-    changed: boolean;
+  modifications: Modification[]
+  material: Material
+  changed: boolean
 }

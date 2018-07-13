@@ -1,7 +1,7 @@
-import { Pipeline } from './pipeline.model';
+import { Pipeline } from './pipeline.model'
 export interface PipelineGroup {
-    name: string;
-    _embedded: {
-        pipelines: Pipeline[];
-    }
+  name: string
+  _embedded: {
+    pipelines: Pipeline[]
+  }
 }

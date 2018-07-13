@@ -1,17 +1,18 @@
-import { Configuration } from '../configuration';
-import * as vscode from 'vscode';
-import { GoCdVscode } from '../gocd-vscode';
-import { first } from 'rxjs/operators';
-import { Messaging } from '../gui/messaging';
+import { Configuration } from '../../configuration'
+import * as vscode from 'vscode'
+import { GoCdVscode } from '../../gocd-vscode'
+import { first } from 'rxjs/operators'
+import { showErrorAlert } from '../alerts/show-error-alert'
+import { RESET_GLOBAL_CONFIG, OK } from '../alerts/named-actions'
 
 function loadPipelines() {
   return GoCdVscode.getShortPipelineInfo()
     .pipe(first())
-    .toPromise();
+    .toPromise()
 }
 
 export default function showPipelineInput(global: boolean = true) {
-  const src = new vscode.CancellationTokenSource();
+  const src = new vscode.CancellationTokenSource()
 
   return vscode.window
     .showQuickPick(
@@ -23,14 +24,14 @@ export default function showPipelineInput(global: boolean = true) {
             detail: pipeline.stages.map(stage => stage.name).join(' -> ')
           })),
         err => {
-          src.cancel();
-          Messaging.showErrorWithButtons(
+          src.cancel()
+          showErrorAlert(
             err,
             'Error attempting to load pipelines',
-            Messaging.RESET_GLOBAL_CONFIG,
-            Messaging.OK
-          );
-          return [];
+            RESET_GLOBAL_CONFIG,
+            OK
+          )
+          return []
         }
       ),
       {
@@ -42,8 +43,8 @@ export default function showPipelineInput(global: boolean = true) {
     )
     .then(input => {
       if (input) {
-        console.log('Set it ');
-        Configuration.setPipeline(input.label, global);
+        console.log('Set it ')
+        Configuration.setPipeline(input.label, global)
       }
-    });
+    })
 }

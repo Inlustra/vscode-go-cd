@@ -1,14 +1,14 @@
-import { PipelineHistory } from '../gocd-api/models/pipeline-history.model';
-import * as vscode from 'vscode';
-import { GoCdVscode } from '../gocd-vscode';
-import { map, filter, last } from 'rxjs/operators';
-import { Pipeline } from '../gocd-api/models/pipeline.model';
+import { PipelineHistory } from '../gocd-api/models/pipeline-history.model'
+import * as vscode from 'vscode'
+import { GoCdVscode } from '../gocd-vscode'
+import { map, filter, last } from 'rxjs/operators'
+import { Pipeline } from '../gocd-api/models/pipeline.model'
 
 export class GoCdStatusBar {
   statusBar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Left,
     0
-  );
+  )
 
   constructor() {}
 
@@ -21,41 +21,41 @@ export class GoCdStatusBar {
       .subscribe(
         pipeline => this.resetStatus(pipeline),
         err => console.error(err)
-      );
+      )
   }
 
   resetStatus(pipeline?: Pipeline) {
     const lastInstance =
-      pipeline && pipeline._embedded.instances.slice(-1).pop();
+      pipeline && pipeline._embedded.instances.slice(-1).pop()
     const lastRunStage =
       lastInstance &&
-      lastInstance._embedded.stages.filter(stage => !!stage.status).pop();
+      lastInstance._embedded.stages.filter(stage => !!stage.status).pop()
     if (pipeline && lastRunStage) {
       switch (lastRunStage.status) {
         case 'Passed':
-          this.statusBar.text = '$(check) ';
-          break;
+          this.statusBar.text = '$(check) '
+          break
         case 'Unknown':
-          this.statusBar.text = '$(sync) ';
-          break;
+          this.statusBar.text = '$(sync) '
+          break
         case 'Failed':
-          this.statusBar.text = '$(alert) ';
-          break;
+          this.statusBar.text = '$(alert) '
+          break
         default:
-          this.statusBar.text = '';
+          this.statusBar.text = ''
       }
       if (pipeline.pause_info.paused) {
-        this.statusBar.text = '$(watch)';
-        this.statusBar.text += pipeline.name + 'paused';
+        this.statusBar.text = '$(watch)'
+        this.statusBar.text += pipeline.name + 'paused'
       } else {
         this.statusBar.text +=
-          pipeline.name + (lastInstance && ' - ' + lastInstance.label);
+          pipeline.name + (lastInstance && ' - ' + lastInstance.label)
       }
-      this.statusBar.show();
+      this.statusBar.show()
     }
   }
 
   refresh() {
-    GoCdVscode.forceRefresh.next();
+    GoCdVscode.forceRefresh.next()
   }
 }

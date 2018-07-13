@@ -1,3 +1,3 @@
 export interface Link {
-    href: string
+  href: string
 }

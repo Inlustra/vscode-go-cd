@@ -1,4 +1,4 @@
-import { merge, interval, Subject, from, of, asapScheduler } from 'rxjs';
+import { merge, interval, Subject, from, of, asapScheduler } from 'rxjs'
 import {
   map,
   switchMap,
@@ -11,16 +11,16 @@ import {
   exhaustMap,
   observeOn,
   share
-} from 'rxjs/operators';
-import { Configuration } from './configuration';
-import { GoCdApi } from './gocd-api';
-import { Pipeline } from './gocd-api/models/pipeline.model';
-import { ShortPipelineInfo } from './models/short-pipeline-info';
+} from 'rxjs/operators'
+import { Configuration } from './configuration'
+import { GoCdApi } from './gocd-api'
+import { Pipeline } from './gocd-api/models/pipeline.model'
+import { ShortPipelineInfo } from './models/short-pipeline-info'
 
 export namespace GoCdVscode {
-  export let paused: boolean = false;
+  export let paused: boolean = false
 
-  export const forceRefresh = new Subject<void>();
+  export const forceRefresh = new Subject<void>()
 
   const configuration$ = Configuration.all$.pipe(
     skipWhile(config => !config.url),
@@ -35,7 +35,7 @@ export namespace GoCdVscode {
     skipWhile(() => paused),
     tap(() => console.log('out!')),
     share()
-  );
+  )
 
   export const pipelineGroups$ = configuration$.pipe(
     observeOn(asapScheduler),
@@ -43,7 +43,7 @@ export namespace GoCdVscode {
       GoCdApi.getPipelineGroups(url, username, password)
     ),
     share()
-  );
+  )
 
   export const pipelines$ = pipelineGroups$.pipe(
     map(
@@ -56,12 +56,12 @@ export namespace GoCdVscode {
           )
     ),
     share()
-  );
+  )
 
   export const shortPipelineInfo$ = pipelines$.pipe(
     map(pipelines => pipelines.map(pipelineToShortPipelineInfo)),
     share()
-  );
+  )
 
   export const selectedPipeline$ = pipelines$.pipe(
     withLatestFrom(configuration$),
@@ -69,13 +69,13 @@ export namespace GoCdVscode {
       pipelines.find(pipeline => pipeline.name === config.pipeline)
     ),
     share()
-  );
+  )
 
   export function getPipeline$(name: string) {
     return pipelines$.pipe(
       map(pipelines => pipelines.find(pipeline => pipeline.name === name)),
       publishReplay(1)
-    );
+    )
   }
 
   export function getPipeline(name: string) {
@@ -83,7 +83,7 @@ export namespace GoCdVscode {
       switchMap(config =>
         GoCdApi.getPipeline(name, config.url, config.username, config.password)
       )
-    );
+    )
   }
 
   export function getPipelines() {
@@ -91,7 +91,7 @@ export namespace GoCdVscode {
       switchMap(config =>
         GoCdApi.getPipelines(config.url, config.username, config.password)
       )
-    );
+    )
   }
 
   export function getShortPipelineInfo() {
@@ -100,7 +100,7 @@ export namespace GoCdVscode {
         GoCdApi.getPipelines(config.url, config.username, config.password)
       ),
       map(pipelines => pipelines.map(pipelineToShortPipelineInfo))
-    );
+    )
   }
 
   function pipelineToShortPipelineInfo(pipeline: Pipeline): ShortPipelineInfo {
@@ -109,14 +109,14 @@ export namespace GoCdVscode {
       label: 'No Label',
       status: 'No Status',
       stages: []
-    };
-    const lastInstance = pipeline._embedded.instances.slice(-1).pop();
-    if (!!lastInstance) {
-      const lastStage = lastInstance._embedded.stages.slice(-1).pop();
-      shortInfo.label = lastInstance.label;
-      shortInfo.stages = lastInstance._embedded.stages;
-      shortInfo.status = (lastStage && lastStage.status) || 'No Status';
     }
-    return shortInfo;
+    const lastInstance = pipeline._embedded.instances.slice(-1).pop()
+    if (!!lastInstance) {
+      const lastStage = lastInstance._embedded.stages.slice(-1).pop()
+      shortInfo.label = lastInstance.label
+      shortInfo.stages = lastInstance._embedded.stages
+      shortInfo.status = (lastStage && lastStage.status) || 'No Status'
+    }
+    return shortInfo
   }
 }
