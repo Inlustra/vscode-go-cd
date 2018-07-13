@@ -1,9 +1,9 @@
-import { PipelineHistory } from '../gocd-api/models/pipeline-history.model'
+import { PipelineHistory } from '../api/models/pipeline-history.model'
 import * as vscode from 'vscode'
-import { GoCdVscode } from '../gocd-vscode'
+import { State } from '../state'
 import { map, filter } from 'rxjs/operators'
-import { Pipeline } from '../gocd-api/models/pipeline.model'
-import { PipelineGroup } from '../gocd-api/models/pipeline-group.model';
+import { Pipeline } from '../api/models/pipeline.model'
+import { PipelineGroup } from '../api/models/pipeline-group.model';
 
 export class GoCdStatusBar {
   statusBar = vscode.window.createStatusBarItem(
@@ -14,7 +14,7 @@ export class GoCdStatusBar {
   constructor() {}
 
   init() {
-    GoCdVscode.selectedPipeline$
+    State.selectedPipeline$
       .pipe(
         filter(pipeline => !!pipeline),
         map(pipeline => pipeline && pipeline)
@@ -57,6 +57,6 @@ export class GoCdStatusBar {
   }
 
   refresh() {
-    GoCdVscode.forceRefresh.next()
+    State.forceRefresh.next()
   }
 }

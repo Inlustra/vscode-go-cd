@@ -7,18 +7,18 @@ import {
   ProviderResult,
   TreeItemCollapsibleState
 } from 'vscode'
-import { PipelineGroup } from '../gocd-api/models/pipeline-group.model'
-import { Pipeline } from '../gocd-api/models/pipeline.model'
-import { GoCdVscode } from '../gocd-vscode'
-import { first, map, distinctUntilChanged, delay } from 'rxjs/operators'
-import { Subscription } from '../../node_modules/rxjs'
+import { PipelineGroup } from '../api/models/pipeline-group.model'
+import { Pipeline } from '../api/models/pipeline.model'
+import { State } from '../state'
+import { first, map, distinctUntilChanged } from 'rxjs/operators'
+import { Subscription } from 'rxjs'
 
 export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
   onChangeSubscription: Subscription | null = null
 
   init() {
     window.registerTreeDataProvider('go-cd-pipelines', this)
-    this.onChangeSubscription = GoCdVscode.pipelineGroups$
+    this.onChangeSubscription = State.pipelineGroups$
       .pipe(distinctUntilChanged())
       .subscribe(() => this._onDidChangeTreeData.fire())
   }
@@ -45,11 +45,9 @@ export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
   getChildren(
     element?: GoCdTreeNode | undefined
   ): ProviderResult<GoCdTreeNode[]> {
-    console.log(element ? element.group ? 'GROUP' : 'PIPELINE' : 'NONE')
     if (!element) {
-      return GoCdVscode.pipelineGroups$
+      return State.pipelineGroups$
         .pipe(
-          delay(0),
           first(),
           map(group => group.map(group => ({ group })))
         )

@@ -1,12 +1,12 @@
 import { Configuration } from '../../configuration'
 import * as vscode from 'vscode'
-import { GoCdVscode } from '../../gocd-vscode'
+import { State } from '../../state'
 import { first } from 'rxjs/operators'
 import { showErrorAlert } from '../alerts/show-error-alert'
 import { RESET_GLOBAL_CONFIG, OK } from '../alerts/named-actions'
 
 function loadPipelines() {
-  return GoCdVscode.getShortPipelineInfo()
+  return State.getShortPipelineInfo()
     .pipe(first())
     .toPromise()
 }

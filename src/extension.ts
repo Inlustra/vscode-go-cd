@@ -5,7 +5,7 @@ import { GoCdStatusBar } from './gui/go-cd-status-bar'
 import * as vscode from 'vscode'
 import { Commands } from './commands'
 import { GoCdTreeView } from './gui/go-cd-tree-view'
-import { GoCdVscode } from './gocd-vscode'
+import { State } from './state'
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
   Commands.forEach(command => context.subscriptions.push(command))
   new GoCdStatusBar().init()
   new GoCdTreeView().init()
-  GoCdVscode.forceRefresh.next()
+  State.forceRefresh.next()
 }
 
 // this method is called when your extension is deactivated

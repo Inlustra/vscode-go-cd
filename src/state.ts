@@ -13,11 +13,11 @@ import {
   share
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
-import { GoCdApi } from './gocd-api'
-import { Pipeline } from './gocd-api/models/pipeline.model'
+import { GoCdApi } from './api'
+import { Pipeline } from './api/models/pipeline.model'
 import { ShortPipelineInfo } from './models/short-pipeline-info'
 
-export namespace GoCdVscode {
+export namespace State {
   export let paused: boolean = false
 
   export const forceRefresh = new Subject<void>()
