@@ -15,4 +15,10 @@ export namespace Icons {
   }
 
   export const check = getIcon('check.svg')
+  export const checkDouble = getIcon('checkDouble.svg')
+  export const ellipsis = getIcon('ellipsis.svg')
+  export const lock = getIcon('lock.svg')
+  export const pause = getIcon('pause.svg')
+  export const sync = getIcon('sync.svg')
+  export const times = getIcon('times.svg')
 }
