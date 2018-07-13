@@ -1,4 +1,4 @@
-import { PipelineHistory } from './models/pipeline-history.model'
+import { PipelineHistory, PaginatedPipelineHistory } from './models/pipeline-history.model'
 import { Pipeline } from './models/pipeline.model'
 import { PipelineGroup } from './models/pipeline-group.model'
 import { Observable, from, asapScheduler } from 'rxjs'
@@ -11,9 +11,10 @@ export namespace GoCdApi {
     method?: string,
     body?: any,
     username?: string,
-    password?: string
+    password?: string,
+    includeHeaders: boolean = true
   ) {
-    const headers: any = { Accept: 'application/vnd.go.cd.v1+json' }
+    const headers: any = includeHeaders ? { Accept: 'application/vnd.go.cd.v1+json' } : {}
     console.log()
     console.log(url)
     console.log(method)
@@ -65,18 +66,19 @@ export namespace GoCdApi {
     )
   }
 
-  export function getPipeline(
+  export function getPipelineHistory(
     name: string,
     host: string,
     username?: string,
     password?: string
-  ): Observable<PipelineHistory[]> {
+  ): Observable<PaginatedPipelineHistory> {
     return performFetch(
       `${host}/api/pipelines/${name}/history`,
       'GET',
       undefined,
       username,
-      password
+      password,
+      false
     )
   }
 }

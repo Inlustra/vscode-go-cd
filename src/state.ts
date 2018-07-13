@@ -1,4 +1,4 @@
-import { merge, interval, Subject, from, of, asapScheduler } from 'rxjs'
+import { merge, interval, Subject, from, of, asapScheduler, Observable } from 'rxjs'
 import {
   map,
   switchMap,
@@ -16,6 +16,7 @@ import { Configuration } from './configuration'
 import { GoCdApi } from './api'
 import { Pipeline } from './api/models/pipeline.model'
 import { ShortPipelineInfo } from './models/short-pipeline-info'
+import { PipelineHistory, PaginatedPipelineHistory } from './api/models/pipeline-history.model';
 
 export namespace State {
   export let paused: boolean = false
@@ -77,10 +78,10 @@ export namespace State {
     )
   }
 
-  export function getPipeline(name: string) {
+  export function getPipelineHistory(name: string) {
     return Configuration.all$.pipe(
       switchMap(config =>
-        GoCdApi.getPipeline(name, config.url, config.username, config.password)
+        GoCdApi.getPipelineHistory(name, config.url, config.username, config.password)
       )
     )
   }

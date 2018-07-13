@@ -13,6 +13,7 @@ import { State } from '../state'
 import { first, map, distinctUntilChanged, tap } from 'rxjs/operators'
 import { Subscription } from 'rxjs'
 import { PipelineInstance } from '../api/models/pipeline-instance.model'
+import { PipelineHistory } from '../api/models/pipeline-history.model'
 
 export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
   onChangeSubscription: Subscription | null = null
@@ -34,18 +35,21 @@ export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
     .event
 
   getTreeItem(element: GoCdTreeNode): TreeItem | Thenable<TreeItem> {
-    if (element.group) {
+    if (element.history) {
+      return new TreeItem(element.history.counter + '')
+    } else if (element.instance) {
+      return new TreeItem(element.instance.label, TreeItemCollapsibleState.None)
+    } else if (element.pipeline) {
+      const { pipeline } = element
+      let label = pipeline.name
+      const instance = pipeline._embedded.instances.slice(-1).pop()
+      label += ` - ${(instance && instance.label) || 'Not yet run'}`
+      return new TreeItem(label, TreeItemCollapsibleState.Collapsed)
+    } else if (element.group) {
       return new TreeItem(
         element.group.name,
         TreeItemCollapsibleState.Collapsed
       )
-    } else if (element.pipeline) {
-      return new TreeItem(
-        element.pipeline.name,
-        TreeItemCollapsibleState.Collapsed
-      )
-    } else if (element.instance) {
-      return new TreeItem(element.instance.label, TreeItemCollapsibleState.None)
     }
     return new TreeItem('Loading...')
   }
@@ -58,11 +62,23 @@ export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
     }
     if (!element) {
       return this.groups.map(group => ({ group }))
-    } else if (!!element.group) {
-      return element.group._embedded.pipelines.map(pipeline => ({ pipeline }))
     } else if (!!element.pipeline) {
-      return element.pipeline._embedded.instances.map(instance => ({
-        instance
+      return State.getPipelineHistory(element.pipeline.name)
+        .pipe(
+          first(),
+          map(paginated =>
+            paginated.pipelines.map(history => ({
+              group: element.group,
+              pipeline: element.pipeline,
+              history
+            }))
+          )
+        )
+        .toPromise()
+    } else if (!!element.group) {
+      return element.group._embedded.pipelines.map(pipeline => ({
+        group: element.group,
+        pipeline
       }))
     }
   }
@@ -72,4 +88,5 @@ interface GoCdTreeNode {
   group?: PipelineGroup
   pipeline?: Pipeline
   instance?: PipelineInstance
+  history?: PipelineHistory
 }
