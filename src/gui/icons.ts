@@ -16,6 +16,7 @@ export namespace Icons {
   export let sync: Icon
   export let times: Icon
   export let ban: Icon
+  export let question: Icon
 
   export function setContext(ctx: ExtensionContext) {
     context = ctx
@@ -35,5 +36,6 @@ export namespace Icons {
     sync = getIcon('sync.svg')
     times = getIcon('times.svg')
     ban = getIcon('ban.svg')
+    question = getIcon('question.svg')
   }
 }
