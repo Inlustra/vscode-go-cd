@@ -12,13 +12,14 @@ import {
 import { PipelineGroup } from '../api/models/pipeline-group.model'
 import { Pipeline } from '../api/models/pipeline.model'
 import { State } from '../state'
-import { first, map, distinctUntilChanged, tap } from 'rxjs/operators'
+import { first, map, distinctUntilChanged, tap, catchError } from 'rxjs/operators'
 import { Subscription } from 'rxjs'
 import { PipelineInstance } from '../api/models/pipeline-instance.model'
 import { PipelineHistory } from '../api/models/pipeline-history.model'
 import { Stage } from '../api/models/stage-history.model'
-import * as path from 'path'
 import { Icons } from './icons'
+import { showErrorAlert } from './alerts/show-error-alert';
+import { OK, REFRESH_PIPELINES } from './alerts/named-actions';
 export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
   onChangeSubscription: Subscription | null = null
   groups: PipelineGroup[] | null = null
@@ -39,27 +40,38 @@ export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
     .event
 
   getTreeItem(element: GoCdTreeNode): TreeItem | Thenable<TreeItem> {
-    if (element.stage) {
-      return new TreeItem(element.stage.name)
-    } else if (element.history) {
-      return new TreeItem(
-        element.history.label + ' ' + this.getHistorySummary(element.history),
-        TreeItemCollapsibleState.Collapsed
-      )
-    } else if (element.pipeline) {
-      const { pipeline } = element
-      let label = pipeline.name
-      const instance = pipeline._embedded.instances.slice(-1).pop()
-      label += ` - ${(instance && instance.label) || 'Not yet run'}`
-      const treeItem = new TreeItem(label, TreeItemCollapsibleState.Collapsed)
-      treeItem.iconPath = Icons.check()
-      return treeItem
-    } else if (element.group) {
-      return new TreeItem(
-        element.group.name,
-        TreeItemCollapsibleState.Collapsed
-      )
-    }
+    try {
+      if (element.stage) {
+        return new TreeItem(element.stage.name)
+      } else if (element.history) {
+        const treeItem = new TreeItem(
+          element.history.label,
+          TreeItemCollapsibleState.Collapsed
+        )
+        treeItem.iconPath = this.getIconFromStages(
+          element.history.stages.map(stage => stage.result)
+        )
+        console.log(treeItem.iconPath)
+        return treeItem
+      } else if (element.pipeline) {
+        const { pipeline } = element
+        let label = pipeline.name
+        const instance = pipeline._embedded.instances.slice(-1).pop()
+        label += ` - ${(instance && instance.label) || 'Not yet run'}`
+        const treeItem = new TreeItem(label, TreeItemCollapsibleState.Collapsed)
+        treeItem.iconPath =
+          instance &&
+          this.getIconFromStages(
+            instance._embedded.stages.map(stage => stage.status)
+          )
+        return treeItem
+      } else if (element.group) {
+        return new TreeItem(
+          element.group.name,
+          TreeItemCollapsibleState.Collapsed
+        )
+      }
+    } catch(e) {console.error(e)}
     return new TreeItem('Loading...')
   }
 
@@ -79,7 +91,8 @@ export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
         stage
       }))
     } else if (!!element.pipeline) {
-      return State.getPipelineHistory(element.pipeline.name)
+      const name = element.pipeline.name
+      return State.getPipelineHistory(name)
         .pipe(
           first(),
           map(paginated =>
@@ -88,7 +101,11 @@ export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
               pipeline: element.pipeline,
               history
             }))
-          )
+          ),
+          catchError(e => {
+            showErrorAlert(e, `Error loading pipeline history for: ${name}`, REFRESH_PIPELINES, OK)
+            return []
+          })
         )
         .toPromise()
     } else if (!!element.group) {
@@ -99,24 +116,26 @@ export class GoCdTreeView implements TreeDataProvider<GoCdTreeNode> {
     }
   }
 
-  getHistorySummary(history: PipelineHistory) {
-    return history.stages
-      .map(stage => {
-        switch (stage.result) {
+  getIconFromStages(stages: string[]) {
+    return stages
+      .map((stage, idx, arr) => {
+        switch (stage) {
           case 'Passed':
-            return '$(check)'
+            return idx === arr.length - 1 ? Icons.checkDouble : Icons.check
           case 'Failed':
-            return '$(x)'
+            return Icons.times
           case 'Running':
-            return '$(triangle-right)'
+            return Icons.sync
           case 'Cancelled':
-            return '$(stop)'
+            return Icons.ban
           default:
-            return stage.result
+          case null:
+          case undefined:
+            return undefined
         }
       })
       .filter(x => !!x)
-      .join(' ')
+      .pop()
   }
 }
 
