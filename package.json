@@ -35,11 +35,15 @@
     },
     "commands": [
       {
-        "command": "goCdPipelines.setGlobalConfig",
+        "command": "gocd.openArtifact",
+        "title": "Go CD: Open Artifact"
+      },
+      {
+        "command": "gocd.setGlobalConfig",
         "title": "Go CD: Set Global Config"
       },
       {
-        "command": "goCdPipelines.forceRefresh",
+        "command": "gocd.forceRefresh",
         "title": "Go CD: Force Refresh"
       }
     ],

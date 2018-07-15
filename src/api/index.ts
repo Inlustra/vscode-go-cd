@@ -1,9 +1,13 @@
-import { PipelineHistory, PaginatedPipelineHistory } from './models/pipeline-history.model'
+import {
+  PipelineHistory,
+  PaginatedPipelineHistory
+} from './models/pipeline-history.model'
 import { Pipeline } from './models/pipeline.model'
 import { PipelineGroup } from './models/pipeline-group.model'
 import { Observable, from, asapScheduler } from 'rxjs'
 import { map, flatMap, tap, observeOn } from 'rxjs/operators'
 import * as request from 'request-promise-native'
+import { Stage } from './models/stage-history.model'
 
 export namespace GoCdApi {
   function performFetch(
@@ -14,7 +18,9 @@ export namespace GoCdApi {
     password?: string,
     includeHeaders: boolean = true
   ) {
-    const headers: any = includeHeaders ? { Accept: 'application/vnd.go.cd.v1+json' } : {}
+    const headers: any = includeHeaders
+      ? { Accept: 'application/vnd.go.cd.v1+json' }
+      : {}
     console.log()
     console.log(url)
     console.log(method)
@@ -79,6 +85,60 @@ export namespace GoCdApi {
       username,
       password,
       false
+    )
+  }
+
+  export function getPipelineInstance(
+    pipelineName: string,
+    pipelineCounter: string,
+    host: string,
+    username?: string,
+    password?: string
+  ): Observable<PipelineHistory> {
+    return performFetch(
+      `${host}/api/pipelines/${pipelineName}/instance/${pipelineCounter}`,
+      'GET',
+      undefined,
+      username,
+      password
+    )
+  }
+
+  export function getStageInstance(
+    pipelineName: string,
+    stageName: string,
+    pipelineCounter: string,
+    stageCounter: string,
+    host: string,
+    username?: string,
+    password?: string
+  ): Observable<Stage> {
+    return performFetch(
+      `${host}/api/stages/${pipelineName}/${stageName}/instance/${pipelineCounter}/${stageCounter}`,
+      'GET',
+      undefined,
+      username,
+      password
+    )
+  }
+
+  export function getArtifactFile(
+    pipelineName: string,
+    pipelineCounter: string,
+    stageName: string,
+    stageCounter: string,
+    jobName: string,
+    artifact: string,
+    host: string,
+    username?: string,
+    password?: string
+  ) {
+    return performFetch(
+      `${host}/files/${pipelineName}/${pipelineCounter}/${stageName}/${stageCounter}/${jobName}/${artifact}`,
+      'GET',
+      undefined,
+      username,
+      password
     )
   }
 }

@@ -1,4 +1,12 @@
-import { merge, interval, Subject, from, of, asapScheduler, Observable } from 'rxjs'
+import {
+  merge,
+  interval,
+  Subject,
+  from,
+  of,
+  asapScheduler,
+  Observable
+} from 'rxjs'
 import {
   map,
   switchMap,
@@ -16,7 +24,10 @@ import { Configuration } from './configuration'
 import { GoCdApi } from './api'
 import { Pipeline } from './api/models/pipeline.model'
 import { ShortPipelineInfo } from './models/short-pipeline-info'
-import { PipelineHistory, PaginatedPipelineHistory } from './api/models/pipeline-history.model';
+import {
+  PipelineHistory,
+  PaginatedPipelineHistory
+} from './api/models/pipeline-history.model'
 
 export namespace State {
   export let paused: boolean = false
@@ -81,7 +92,12 @@ export namespace State {
   export function getPipelineHistory(name: string) {
     return Configuration.all$.pipe(
       switchMap(config =>
-        GoCdApi.getPipelineHistory(name, config.url, config.username, config.password)
+        GoCdApi.getPipelineHistory(
+          name,
+          config.url,
+          config.username,
+          config.password
+        )
       )
     )
   }
@@ -90,6 +106,66 @@ export namespace State {
     return Configuration.all$.pipe(
       switchMap(config =>
         GoCdApi.getPipelines(config.url, config.username, config.password)
+      )
+    )
+  }
+
+  export function getPipelineInstance(pipelineName: string, pipelineCounter: string) {
+    return Configuration.all$.pipe(
+      switchMap(config =>
+        GoCdApi.getPipelineInstance(
+          pipelineName,
+          pipelineCounter,
+          config.url,
+          config.username,
+          config.password
+        )
+      )
+    )
+  }
+
+  export function getStageInstance(
+    pipelineName: string,
+    stageName: string,
+    pipelineCounter: string,
+    stageCounter: string
+  ) {
+    return Configuration.all$.pipe(
+      switchMap(config =>
+        GoCdApi.getStageInstance(
+          pipelineName,
+          stageName,
+          pipelineCounter,
+          stageCounter,
+          config.url,
+          config.username,
+          config.password
+        )
+      )
+    )
+  }
+
+  export function getArtifactFile(
+    pipelineName: string,
+    pipelineCounter: string,
+    stageName: string,
+    stageCounter: string,
+    jobName: string,
+    artifact: string
+  ) {
+    return Configuration.all$.pipe(
+      switchMap(config =>
+        GoCdApi.getArtifactFile(
+          pipelineName,
+          pipelineCounter,
+          stageName,
+          stageCounter,
+          jobName,
+          artifact, 
+          config.url,
+          config.username,
+          config.password
+        )
       )
     )
   }

@@ -10,15 +10,17 @@ export class PipelineHistoryNode implements TreeNode {
   constructor(
     public group: PipelineGroup,
     public pipeline: Pipeline,
-    public history: PipelineHistory
+    public history: PipelineHistory,
+    public label?: string,
+    public displayIcon: boolean = true
   ) {}
 
   toTreeItem(): TreeItem {
     const treeItem = new TreeItem(
-      this.history.label,
+      this.label || this.history.label,
       TreeItemCollapsibleState.Collapsed
     )
-    treeItem.iconPath = getIconFromStages(
+    treeItem.iconPath = this.displayIcon && getIconFromStages(
       this.history.stages.map(stage => stage.result)
     )
     return treeItem
