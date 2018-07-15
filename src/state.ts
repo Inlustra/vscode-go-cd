@@ -110,33 +110,15 @@ export namespace State {
     )
   }
 
-  export function getPipelineInstance(pipelineName: string, pipelineCounter: string) {
+  export function getPipelineInstance(
+    pipelineName: string,
+    pipelineCounter: string
+  ) {
     return Configuration.all$.pipe(
       switchMap(config =>
         GoCdApi.getPipelineInstance(
           pipelineName,
           pipelineCounter,
-          config.url,
-          config.username,
-          config.password
-        )
-      )
-    )
-  }
-
-  export function getStageInstance(
-    pipelineName: string,
-    stageName: string,
-    pipelineCounter: string,
-    stageCounter: string
-  ) {
-    return Configuration.all$.pipe(
-      switchMap(config =>
-        GoCdApi.getStageInstance(
-          pipelineName,
-          stageName,
-          pipelineCounter,
-          stageCounter,
           config.url,
           config.username,
           config.password
@@ -154,19 +136,19 @@ export namespace State {
     artifact: string
   ) {
     return Configuration.all$.pipe(
-      switchMap(config =>
-        GoCdApi.getArtifactFile(
+      exhaustMap(config => {
+        return GoCdApi.getArtifactFile(
           pipelineName,
           pipelineCounter,
           stageName,
           stageCounter,
           jobName,
-          artifact, 
+          artifact,
           config.url,
           config.username,
           config.password
         )
-      )
+      })
     )
   }
 

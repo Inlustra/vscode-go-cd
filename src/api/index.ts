@@ -6,7 +6,8 @@ import { Pipeline } from './models/pipeline.model'
 import { PipelineGroup } from './models/pipeline-group.model'
 import { Observable, from, asapScheduler } from 'rxjs'
 import { map, flatMap, tap, observeOn } from 'rxjs/operators'
-import * as request from 'request-promise-native'
+import * as request from 'request'
+import * as requestPromise from 'request-promise-native'
 import { Stage } from './models/stage-history.model'
 
 export namespace GoCdApi {
@@ -16,7 +17,8 @@ export namespace GoCdApi {
     body?: any,
     username?: string,
     password?: string,
-    includeHeaders: boolean = true
+    includeHeaders: boolean = true,
+    json: boolean = true
   ) {
     const headers: any = includeHeaders
       ? { Accept: 'application/vnd.go.cd.v1+json' }
@@ -29,10 +31,10 @@ export namespace GoCdApi {
     console.log(password)
     console.log()
     return from(
-      request(url, {
+      requestPromise(url, {
         method,
         headers,
-        json: true
+        json,
       })
     ).pipe(observeOn(asapScheduler))
   }
@@ -58,7 +60,6 @@ export namespace GoCdApi {
     username?: string,
     password?: string
   ): Observable<Pipeline[]> {
-    console.log('Getting Pipelines!')
     return getPipelineGroups(host, username, password).pipe(
       map(
         pipelineGroups =>
@@ -104,24 +105,6 @@ export namespace GoCdApi {
     )
   }
 
-  export function getStageInstance(
-    pipelineName: string,
-    stageName: string,
-    pipelineCounter: string,
-    stageCounter: string,
-    host: string,
-    username?: string,
-    password?: string
-  ): Observable<Stage> {
-    return performFetch(
-      `${host}/api/stages/${pipelineName}/${stageName}/instance/${pipelineCounter}/${stageCounter}`,
-      'GET',
-      undefined,
-      username,
-      password
-    )
-  }
-
   export function getArtifactFile(
     pipelineName: string,
     pipelineCounter: string,
@@ -138,7 +121,10 @@ export namespace GoCdApi {
       'GET',
       undefined,
       username,
-      password
+      password,
+      true,
+      false
     )
   }
+
 }

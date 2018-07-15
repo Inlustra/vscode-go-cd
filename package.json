@@ -92,11 +92,12 @@
     "mocha": "^2.3.3",
     "tslint": "^5.8.0",
     "typescript": "^2.9.2",
-    "vscode": "^1.1.6"
+    "vscode": "^1.1.6",
+    "rxjs-tslint": "^0.1.4"
   },
   "dependencies": {
     "request-promise-native": "^1.0.5",
     "rxjs": "^6.2.0",
-    "rxjs-tslint": "^0.1.4"
+    "tmp-promise": "^1.0.5"
   }
 }
