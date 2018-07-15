@@ -1,77 +1,92 @@
 import { GoCdConfiguration } from './models/go-cd-config.model'
 import * as vscode from 'vscode'
 import { ConfigurationKeys } from './constants/configuration-keys.const'
-import { Observable, Subject, BehaviorSubject, combineLatest } from 'rxjs'
+import {
+  Observable,
+  Subject,
+  BehaviorSubject,
+  combineLatest,
+  ReplaySubject
+} from 'rxjs'
 import { distinctUntilChanged, map, tap } from 'rxjs/operators'
 
+interface GoCDConfig {
+  url: string
+  username: string
+  password: string
+  pipeline: string
+  refreshInterval: number
+}
+
 export namespace Configuration {
-  export const vscodeConfig = vscode.workspace.getConfiguration(
+  const {
+    SECTION,
+    URL,
+    USERNAME,
+    PASSWORD,
+    PIPELINE,
+    REFRESH_INTERVAL
+  } = ConfigurationKeys
+
+  export let vscodeConfig = vscode.workspace.getConfiguration(
     ConfigurationKeys.SECTION
   )
 
-  export const url$ = new BehaviorSubject<string>(
-    vscodeConfig.get(ConfigurationKeys.URL) || ''
-  )
-  export const username$ = new BehaviorSubject<string>(
-    vscodeConfig.get<string>(ConfigurationKeys.USERNAME) || ''
-  )
-  export const password$ = new BehaviorSubject<string>(
-    vscodeConfig.get<string>(ConfigurationKeys.PASSWORD) || ''
-  )
-  export const pipeline$ = new BehaviorSubject<string>(
-    vscodeConfig.get<string>(ConfigurationKeys.PIPELINE) || ''
-  )
-  export const refreshInterval$ = new BehaviorSubject<number>(
-    vscodeConfig.get<number>(ConfigurationKeys.REFRESH_INTERVAL) || 5000
+  const config$: Subject<GoCDConfig> = new BehaviorSubject<GoCDConfig>(
+    getConfig()
   )
 
-  export const all$: Observable<GoCdConfiguration> = combineLatest(
-    url$,
-    username$,
-    password$,
-    pipeline$,
-    refreshInterval$
-  ).pipe(
-    distinctUntilChanged(),
-    map(([url, username, password, pipeline, refreshInterval]) => ({
-      url,
-      username,
-      password,
-      pipeline,
-      refreshInterval
-    }))
+  export const all$: Observable<GoCdConfiguration> = config$.pipe(
+    distinctUntilChanged()
   )
+
+  vscode.workspace.onDidChangeConfiguration(config => {
+    vscodeConfig = vscode.workspace.getConfiguration(ConfigurationKeys.SECTION)
+    if (
+      config.affectsConfiguration(SECTION + '.' + URL) ||
+      config.affectsConfiguration(SECTION + '.' + USERNAME) ||
+      config.affectsConfiguration(SECTION + '.' + PASSWORD) ||
+      config.affectsConfiguration(SECTION + '.' + PIPELINE) ||
+      config.affectsConfiguration(SECTION + '.' + REFRESH_INTERVAL)
+    ) {
+      config$.next(getConfig())
+    }
+  })
+
+  export function getConfig(): GoCDConfig {
+    return {
+      url: vscodeConfig.get(URL) || '',
+      username: vscodeConfig.get(USERNAME) || '',
+      password: vscodeConfig.get(PASSWORD) || '',
+      pipeline: vscodeConfig.get(PIPELINE) || '',
+      refreshInterval: vscodeConfig.get(REFRESH_INTERVAL) || 20000
+    }
+  }
 
   export function setUrl(url: string, global: boolean = true) {
-    vscodeConfig
-      .update(ConfigurationKeys.URL, url.replace(/\/$/, ''), global)
-      .then(() => url$.next(url))
+    vscodeConfig.update(ConfigurationKeys.URL, url.replace(/\/$/, ''), global)
   }
 
   export function setUsername(username: string, global: boolean = true) {
-    vscodeConfig
-      .update(ConfigurationKeys.USERNAME, username, global)
-      .then(() => username$.next(username))
+    vscodeConfig.update(ConfigurationKeys.USERNAME, username, global)
   }
 
   export function setPassword(password: string, global: boolean = true) {
-    vscodeConfig
-      .update(ConfigurationKeys.PASSWORD, password, global)
-      .then(() => password$.next(password))
+    vscodeConfig.update(ConfigurationKeys.PASSWORD, password, global)
   }
 
   export function setPipeline(pipeline: string, global: boolean = true) {
-    vscodeConfig
-      .update(ConfigurationKeys.PIPELINE, pipeline, global)
-      .then(() => pipeline$.next(pipeline))
+    vscodeConfig.update(ConfigurationKeys.PIPELINE, pipeline, global)
   }
 
   export function setRefreshInterval(
     refreshInterval: number,
     global: boolean = true
   ) {
-    vscodeConfig
-      .update(ConfigurationKeys.REFRESH_INTERVAL, refreshInterval, global)
-      .then(() => refreshInterval$.next(refreshInterval))
+    vscodeConfig.update(
+      ConfigurationKeys.REFRESH_INTERVAL,
+      refreshInterval,
+      global
+    )
   }
 }

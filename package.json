@@ -28,8 +28,13 @@
     "views": {
       "go-cd-view": [
         {
+          "id": "go-cd-selected-pipeline",
+          "name": "Selected Pipeline",
+          "when": "gocd.pipeline != null"
+        },
+        {
           "id": "go-cd-pipelines",
-          "name": "Pipeline Groups"
+          "name": "All Pipelines"
         }
       ]
     },

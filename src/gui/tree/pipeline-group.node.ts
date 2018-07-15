@@ -13,7 +13,7 @@ export class PipelineGroupNode implements TreeNode {
   
     getChildren(): TreeNode[] {
       return this.group._embedded.pipelines.map(
-        pipeline => new PipelineNode(this.group, pipeline)
+        pipeline => new PipelineNode(pipeline)
       )
     }
   }

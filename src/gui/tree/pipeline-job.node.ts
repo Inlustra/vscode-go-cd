@@ -11,7 +11,6 @@ import { OPEN_ARTIFACT_COMMAND } from '../../commands'
 
 export class PipelineJobNode implements TreeNode {
   constructor(
-    public group: PipelineGroup,
     public pipeline: Pipeline,
     public history: PipelineHistory,
     public stage: Stage,

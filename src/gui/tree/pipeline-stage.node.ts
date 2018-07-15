@@ -9,7 +9,6 @@ import { PipelineJobNode } from './pipeline-job.node'
 
 export class PipelineStageNode implements TreeNode {
   constructor(
-    public group: PipelineGroup,
     public pipeline: Pipeline,
     public history: PipelineHistory,
     public stage: Stage
@@ -32,7 +31,6 @@ export class PipelineStageNode implements TreeNode {
     return this.stage.jobs.map(
       job =>
         new PipelineJobNode(
-          this.group,
           this.pipeline,
           this.history,
           this.stage,

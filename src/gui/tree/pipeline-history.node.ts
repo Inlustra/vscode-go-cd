@@ -8,7 +8,6 @@ import { PipelineStageNode } from './pipeline-stage.node'
 
 export class PipelineHistoryNode implements TreeNode {
   constructor(
-    public group: PipelineGroup,
     public pipeline: Pipeline,
     public history: PipelineHistory,
     public label?: string,
@@ -29,7 +28,7 @@ export class PipelineHistoryNode implements TreeNode {
   getChildren(): TreeNode[] | Thenable<TreeNode[]> {
     return this.history.stages.map(
       stage =>
-        new PipelineStageNode(this.group, this.pipeline, this.history, stage)
+        new PipelineStageNode(this.pipeline, this.history, stage)
     )
   }
 }

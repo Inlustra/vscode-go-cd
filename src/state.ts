@@ -18,7 +18,8 @@ import {
   catchError,
   exhaustMap,
   observeOn,
-  share
+  share,
+  filter
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './api'
@@ -38,6 +39,7 @@ export namespace State {
     skipWhile(config => !config.url),
     switchMap(config =>
       merge(
+        of(null),
         forceRefresh.pipe(tap(() => console.log('Forced Refresh'))),
         interval(Math.max(config.refreshInterval, 1000)).pipe(
           tap(() => console.log('Regular Refresh'))
@@ -45,8 +47,7 @@ export namespace State {
       ).pipe(mapTo(config))
     ),
     skipWhile(() => paused),
-    tap(() => console.log('out!')),
-    share()
+    tap(() => console.log('out!'))
   )
 
   export const pipelineGroups$ = configuration$.pipe(
@@ -76,6 +77,7 @@ export namespace State {
 
   export const selectedPipeline$ = pipelines$.pipe(
     withLatestFrom(configuration$),
+    filter(([pipelines$, config]) => !!config.pipeline),
     map(([pipelines, config]) =>
       pipelines.find(pipeline => pipeline.name === config.pipeline)
     ),

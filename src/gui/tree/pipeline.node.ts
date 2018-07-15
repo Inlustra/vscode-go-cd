@@ -12,7 +12,7 @@ import { REFRESH_PIPELINES, OK } from '../alerts/named-actions'
 import { PaginatedPipelineHistory } from '../../api/models/pipeline-history.model'
 
 export class PipelineNode implements TreeNode {
-  constructor(public group: PipelineGroup, public pipeline: Pipeline) {}
+  constructor(public pipeline: Pipeline) {}
 
   getLatestInstance() {
     return this.pipeline._embedded.instances.slice(-1).pop()
@@ -58,7 +58,6 @@ export class PipelineNode implements TreeNode {
           ...(latestItem
             ? [
                 new PipelineHistoryNode(
-                  this.group,
                   this.pipeline,
                   latestItem,
                   'Stages',
@@ -66,7 +65,7 @@ export class PipelineNode implements TreeNode {
                 )
               ]
             : []),
-          new PipelineHistoryListNode(this.group, this.pipeline, paginated)
+          new PipelineHistoryListNode(this.pipeline, paginated)
         ]
       })
   }
@@ -80,7 +79,6 @@ export class PipelineNode implements TreeNode {
 
 class PipelineHistoryListNode implements TreeNode {
   constructor(
-    private group: PipelineGroup,
     private pipeline: Pipeline,
     private paginated: PaginatedPipelineHistory
   ) {}
@@ -89,7 +87,7 @@ class PipelineHistoryListNode implements TreeNode {
   }
   getChildren(): TreeNode[] | Thenable<TreeNode[]> {
     return this.paginated.pipelines.map(
-      history => new PipelineHistoryNode(this.group, this.pipeline, history)
+      history => new PipelineHistoryNode(this.pipeline, history)
     )
   }
 }
