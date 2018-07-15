@@ -28,10 +28,6 @@ export namespace Configuration {
     REFRESH_INTERVAL
   } = ConfigurationKeys
 
-  export let vscodeConfig = vscode.workspace.getConfiguration(
-    ConfigurationKeys.SECTION
-  )
-
   const config$: Subject<GoCDConfig> = new BehaviorSubject<GoCDConfig>(
     getConfig()
   )
@@ -41,7 +37,6 @@ export namespace Configuration {
   )
 
   vscode.workspace.onDidChangeConfiguration(config => {
-    vscodeConfig = vscode.workspace.getConfiguration(ConfigurationKeys.SECTION)
     if (
       config.affectsConfiguration(SECTION + '.' + URL) ||
       config.affectsConfiguration(SECTION + '.' + USERNAME) ||
@@ -54,6 +49,9 @@ export namespace Configuration {
   })
 
   export function getConfig(): GoCDConfig {
+    const vscodeConfig = vscode.workspace.getConfiguration(
+      ConfigurationKeys.SECTION
+    )
     return {
       url: vscodeConfig.get(URL) || '',
       username: vscodeConfig.get(USERNAME) || '',
@@ -64,29 +62,35 @@ export namespace Configuration {
   }
 
   export function setUrl(url: string, global: boolean = true) {
-    vscodeConfig.update(ConfigurationKeys.URL, url.replace(/\/$/, ''), global)
+    vscode.workspace
+      .getConfiguration(ConfigurationKeys.SECTION)
+      .update(ConfigurationKeys.URL, url.replace(/\/$/, ''), global)
   }
 
   export function setUsername(username: string, global: boolean = true) {
-    vscodeConfig.update(ConfigurationKeys.USERNAME, username, global)
+    vscode.workspace
+      .getConfiguration(ConfigurationKeys.SECTION)
+      .update(ConfigurationKeys.USERNAME, username, global)
   }
 
   export function setPassword(password: string, global: boolean = true) {
-    vscodeConfig.update(ConfigurationKeys.PASSWORD, password, global)
+    vscode.workspace
+      .getConfiguration(ConfigurationKeys.SECTION)
+      .update(ConfigurationKeys.PASSWORD, password, global)
   }
 
   export function setPipeline(pipeline: string, global: boolean = true) {
-    vscodeConfig.update(ConfigurationKeys.PIPELINE, pipeline, global)
+    vscode.workspace
+      .getConfiguration(ConfigurationKeys.SECTION)
+      .update(ConfigurationKeys.PIPELINE, pipeline, global)
   }
 
   export function setRefreshInterval(
     refreshInterval: number,
     global: boolean = true
   ) {
-    vscodeConfig.update(
-      ConfigurationKeys.REFRESH_INTERVAL,
-      refreshInterval,
-      global
-    )
+    vscode.workspace
+      .getConfiguration(ConfigurationKeys.SECTION)
+      .update(ConfigurationKeys.REFRESH_INTERVAL, refreshInterval, global)
   }
 }
