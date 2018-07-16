@@ -6,7 +6,7 @@ import { Stage } from '../../api/models/stage-history.model'
 import * as vscode from 'vscode'
 import { TreeItem } from 'vscode'
 import { Job } from '../../api/models/job.model'
-import { getIconFromStage } from './utils'
+import { getIconFromStage, getIconFromJob } from './utils'
 import { OPEN_ARTIFACT_COMMAND } from '../../commands'
 
 export class PipelineJobNode implements TreeNode {
@@ -19,7 +19,7 @@ export class PipelineJobNode implements TreeNode {
 
   toTreeItem(): TreeItem {
     const treeItem = new TreeItem(this.job.name)
-    treeItem.iconPath = getIconFromStage(this.job.result)
+    treeItem.iconPath = getIconFromJob(this.job)
     treeItem.command = {
       title: 'Go CD: Open Artifact',
       command: OPEN_ARTIFACT_COMMAND,

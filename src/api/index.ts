@@ -34,7 +34,7 @@ export namespace GoCdApi {
       requestPromise(url, {
         method,
         headers,
-        json,
+        json
       })
     ).pipe(observeOn(asapScheduler))
   }
@@ -112,19 +112,15 @@ export namespace GoCdApi {
     stageCounter: string,
     jobName: string,
     artifact: string,
+    startLineNumber: number | undefined,
     host: string,
     username?: string,
     password?: string
   ) {
-    return performFetch(
-      `${host}/files/${pipelineName}/${pipelineCounter}/${stageName}/${stageCounter}/${jobName}/${artifact}`,
-      'GET',
-      undefined,
-      username,
-      password,
-      true,
-      false
-    )
+    let url = `${host}/files/${pipelineName}/${pipelineCounter}/${stageName}/${stageCounter}/${jobName}/${artifact}`
+    if (startLineNumber !== undefined) {
+      url = `${url}?startLineNumber=${startLineNumber}`
+    }
+    return performFetch(url, 'GET', undefined, username, password, true, false)
   }
-
 }
