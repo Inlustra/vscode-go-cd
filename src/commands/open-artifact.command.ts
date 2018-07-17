@@ -20,6 +20,6 @@ export default function OpenArtifact(args: OpenArtifactCommandArgs) {
     args.jobName,
     args.artifact
   )
-  stream.onComplete$.subscribe(message.dispose)
+  stream.onComplete$.subscribe(() => message.dispose())
   stream.start()
 }

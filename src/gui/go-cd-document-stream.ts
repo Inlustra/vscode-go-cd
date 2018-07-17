@@ -60,7 +60,7 @@ export class GoCdDocumentStream {
                 new Position(doc.lineCount, 0),
                 file.toString()
               )
-              return workspace.applyEdit(edit).then(doc.save)
+              return workspace.applyEdit(edit)
             })
           )
         })
@@ -69,12 +69,8 @@ export class GoCdDocumentStream {
   }
 
   private registerOnClose(doc: TextDocument) {
-    console.log('registered!')
     const disposable = workspace.onDidCloseTextDocument(closedDoc => {
-      console.log('CLOSED!')
-      console.log(closedDoc)
       if (closedDoc.uri.path === doc.uri.path) {
-        console.log('COMPLETE!')
         this.onComplete$.next()
       }
     })
@@ -91,7 +87,7 @@ export class GoCdDocumentStream {
         .substring(2, 15)
     return from(
       workspace.openTextDocument(
-        Uri.parse('untitled:/tmp/' + randomString + '.log')
+        Uri.parse('untitled:' + randomString + '.log')
       )
     ).pipe(tap(doc => window.showTextDocument(doc)))
   }
