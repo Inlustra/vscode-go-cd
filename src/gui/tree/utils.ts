@@ -44,15 +44,21 @@ export function getIconFromStage(stage: Stage) {
       const x = stage.jobs.map(
         job => (job.result === 'Unknown' ? job.state : job.result)
       )
-      if (x.every(state => state === 'Building' || state === 'Scheduled')) {
+      if (
+        x.every(
+          state =>
+            state === 'Building' || state === 'Scheduled' || state === 'Passed'
+        )
+      ) {
         return Icons.sync
-      } else if (x.indexOf('Failed') >= -1) {
+      } else if (x.some(state => state === 'Failed')) {
         return Icons.issueReopened
       }
   }
 }
 
 export function getIconFromPipelineInstance(instance: PipelineInstance) {
+  console.log(instance._embedded.stages.map(stage => stage.status))
   return instance._embedded.stages
     .map(stage => stage.status)
     .map((status, idx, arr) => {
@@ -61,10 +67,10 @@ export function getIconFromPipelineInstance(instance: PipelineInstance) {
           return Icons.issueOpened
         case 'Passed':
           return Icons.check
+        case 'Building':
+          return Icons.sync
         case 'Cancelled':
           return Icons.circleSlash
-        case 'Unknown':
-          return Icons.sync
       }
     })
     .filter(x => !!x)
