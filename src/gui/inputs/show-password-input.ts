@@ -8,7 +8,7 @@ export default function showPasswordInput(global: boolean = true) {
       password: true,
       placeHolder: 'Password',
       prompt: `Your ${global ? 'global' : 'workspace'} Go CD Password`,
-      value: Configuration.vscodeConfig.get<string>(ConfigurationKeys.PASSWORD),
+      value: Configuration.getConfig().password,
       ignoreFocusOut: true
     })
     .then(value => {
