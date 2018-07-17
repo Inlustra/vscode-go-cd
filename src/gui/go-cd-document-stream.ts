@@ -1,5 +1,12 @@
 import * as tmp from 'tmp-promise'
-import { Uri, workspace, TextDocument, WorkspaceEdit, Position } from 'vscode'
+import {
+  Uri,
+  window,
+  workspace,
+  TextDocument,
+  WorkspaceEdit,
+  Position
+} from 'vscode'
 import { State } from '../state'
 import {
   first,
@@ -19,7 +26,7 @@ import { showErrorAlert } from './alerts/show-error-alert'
 import { OK } from './alerts/named-actions'
 
 export class GoCdDocumentStream {
-  private stopped$: Subject<void> = new Subject()
+  public onComplete$: Subject<void> = new Subject()
 
   constructor(
     private pipelineName: string,
@@ -40,7 +47,7 @@ export class GoCdDocumentStream {
         filter((doc): doc is TextDocument => !!doc),
         tap(doc => this.registerOnClose(doc)),
         switchMap(doc => merge(of(doc), interval(5000).pipe(mapTo(doc)))),
-        takeUntil(this.stopped$),
+        takeUntil(this.onComplete$),
         exhaustMap(doc => {
           return this.getFile(doc.lineCount).pipe(
             catchError(
@@ -53,28 +60,40 @@ export class GoCdDocumentStream {
                 new Position(doc.lineCount, 0),
                 file.toString()
               )
-              return workspace.applyEdit(edit)
+              return workspace.applyEdit(edit).then(doc.save)
             })
           )
         })
       )
-      .subscribe()
+      .subscribe(() => {}, () => {}, this.onComplete$.next)
   }
 
   private registerOnClose(doc: TextDocument) {
+    console.log('registered!')
     const disposable = workspace.onDidCloseTextDocument(closedDoc => {
-      if (closedDoc.uri === doc.uri) {
-        this.stopped$.next()
+      console.log('CLOSED!')
+      console.log(closedDoc)
+      if (closedDoc.uri.path === doc.uri.path) {
+        console.log('COMPLETE!')
+        this.onComplete$.next()
       }
     })
-    this.stopped$.subscribe(() => disposable.dispose())
+    this.onComplete$.subscribe(() => disposable.dispose())
   }
 
   private openDocument(): Observable<TextDocument> {
-    return from(tmp.file({ postfix: '.log' })).pipe(
-      map(file => Uri.parse('file:' + file.path)),
-      flatMap(uri => workspace.openTextDocument(uri))
-    )
+    const randomString =
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15)
+    return from(
+      workspace.openTextDocument(
+        Uri.parse('untitled:/tmp/' + randomString + '.log')
+      )
+    ).pipe(tap(doc => window.showTextDocument(doc)))
   }
 
   private getFile(lineStart?: number): Observable<any> {
