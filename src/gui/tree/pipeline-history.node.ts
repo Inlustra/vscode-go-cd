@@ -3,8 +3,8 @@ import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { Pipeline } from '../../api/models/pipeline.model'
 import { PipelineHistory } from '../../api/models/pipeline-history.model'
 import { PipelineGroup } from '../../api/models/pipeline-group.model'
-import { getIconFromStages } from './utils'
 import { PipelineStageNode } from './pipeline-stage.node'
+import { getIconFromHistory } from './utils';
 
 export class PipelineHistoryNode implements TreeNode {
   constructor(
@@ -19,9 +19,7 @@ export class PipelineHistoryNode implements TreeNode {
       this.label || this.history.label,
       TreeItemCollapsibleState.Collapsed
     )
-    treeItem.iconPath = this.displayIcon && getIconFromStages(
-      this.history.stages.map(stage => stage.result)
-    )
+    treeItem.iconPath = this.displayIcon && getIconFromHistory(this.history)
     return treeItem
   }
 

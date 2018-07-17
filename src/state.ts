@@ -135,7 +135,8 @@ export namespace State {
     stageName: string,
     stageCounter: string,
     jobName: string,
-    artifact: string
+    artifact: string,
+    startLineNumber?: number
   ) {
     return Configuration.all$.pipe(
       exhaustMap(config => {
@@ -146,6 +147,7 @@ export namespace State {
           stageCounter,
           jobName,
           artifact,
+          startLineNumber,
           config.url,
           config.username,
           config.password

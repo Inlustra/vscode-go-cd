@@ -1,6 +1,6 @@
 import { ExtensionContext } from 'vscode'
 
-interface Icon {
+export interface Icon {
   light: string
   dark: string
 }
@@ -8,15 +8,17 @@ interface Icon {
 export namespace Icons {
   let context: ExtensionContext
 
+  export let alert: Icon
   export let check: Icon
-  export let checkDouble: Icon
-  export let ellipsis: Icon
-  export let lock: Icon
-  export let pause: Icon
+  export let circleSlash: Icon
+  export let clock: Icon
+  export let gear: Icon
+  export let issueOpened: Icon
+  export let issueReopened: Icon
+  export let shield: Icon
   export let sync: Icon
-  export let times: Icon
-  export let ban: Icon
-  export let question: Icon
+  export let verified: Icon
+  export let x: Icon
 
   export function setContext(ctx: ExtensionContext) {
     context = ctx
@@ -28,14 +30,16 @@ export namespace Icons {
       }
     }
 
+    alert = getIcon('alert.svg')
     check = getIcon('check.svg')
-    checkDouble = getIcon('check-double.svg')
-    ellipsis = getIcon('ellipsis.svg')
-    lock = getIcon('lock.svg')
-    pause = getIcon('pause.svg')
+    circleSlash = getIcon('circle-slash.svg')
+    clock = getIcon('clock.svg')
+    gear = getIcon('gear.svg')
+    issueOpened = getIcon('issue-opened.svg')
+    issueReopened = getIcon('issue-reopened.svg')
+    shield = getIcon('shield.svg')
     sync = getIcon('sync.svg')
-    times = getIcon('times.svg')
-    ban = getIcon('ban.svg')
-    question = getIcon('question.svg')
+    verified = getIcon('verified.svg')
+    x = getIcon('x.svg')
   }
 }

@@ -4,7 +4,7 @@ import { PipelineHistory } from '../../api/models/pipeline-history.model'
 import { Stage } from '../../api/models/stage-history.model'
 import { Pipeline } from '../../api/models/pipeline.model'
 import { PipelineGroup } from '../../api/models/pipeline-group.model'
-import { getIconFromStages } from './utils'
+import { getIconFromStage } from './utils'
 import { PipelineJobNode } from './pipeline-job.node'
 
 export class PipelineStageNode implements TreeNode {
@@ -21,21 +21,13 @@ export class PipelineStageNode implements TreeNode {
         ? TreeItemCollapsibleState.Collapsed
         : TreeItemCollapsibleState.None
     )
-    treeItem.iconPath = getIconFromStages(
-      this.stage.jobs.map(job => job.result)
-    )
+    treeItem.iconPath = getIconFromStage(this.stage)
     return treeItem
   }
 
   getChildren(): TreeNode[] | Thenable<TreeNode[]> {
     return this.stage.jobs.map(
-      job =>
-        new PipelineJobNode(
-          this.pipeline,
-          this.history,
-          this.stage,
-          job
-        )
+      job => new PipelineJobNode(this.pipeline, this.history, this.stage, job)
     )
   }
 }

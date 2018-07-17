@@ -3,7 +3,7 @@ import { PipelineGroup } from '../../api/models/pipeline-group.model'
 import { Pipeline } from '../../api/models/pipeline.model'
 import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { Icons } from '../icons'
-import { getIconFromStages } from './utils'
+import { getIconFromPipelineInstance } from './utils'
 import { State } from '../../state'
 import { first } from 'rxjs/operators'
 import { showErrorAlert } from '../alerts/show-error-alert'
@@ -25,12 +25,13 @@ export class PipelineNode implements TreeNode {
     )
     const instance = this.getLatestInstance()
     if (instance) {
-      const stages = instance._embedded.stages.map(stage => stage.status)
-      treeItem.iconPath = getIconFromStages(stages)
+      treeItem.iconPath = getIconFromPipelineInstance(instance)
       treeItem.label += ` - ${instance && instance.label}`
     }
-    if (this.pipeline.locked) {
-      treeItem.iconPath = Icons.lock
+    if (this.pipeline.pause_info.paused) {
+      treeItem.iconPath = Icons.gear
+    } else if (this.pipeline.locked) {
+      treeItem.iconPath = Icons.shield
     }
     return treeItem
   }
