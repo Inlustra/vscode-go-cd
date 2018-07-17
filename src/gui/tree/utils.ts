@@ -37,9 +37,7 @@ export function getIconFromStage(stage: Stage) {
     case 'Failed':
       return Icons.issueOpened
     case 'Passed':
-      return stage.jobs.every(job => job.result === 'Passed')
-        ? Icons.verified
-        : Icons.check
+      return Icons.check
     case 'Cancelled':
       return Icons.circleSlash
     case 'Unknown':
@@ -62,13 +60,12 @@ export function getIconFromPipelineInstance(instance: PipelineInstance) {
         case 'Failed':
           return Icons.issueOpened
         case 'Passed':
-          return arr.every(status => status === 'Passed')
-            ? Icons.verified
-            : Icons.check
+          return Icons.check
         case 'Cancelled':
           return Icons.circleSlash
       }
     })
+    .filter(x => !!x)
     .pop()
 }
 
