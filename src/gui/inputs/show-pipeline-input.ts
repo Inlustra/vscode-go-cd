@@ -43,7 +43,6 @@ export default function showPipelineInput(global: boolean = true) {
     )
     .then(input => {
       if (input) {
-        console.log('Set it ')
         Configuration.setPipeline(input.label, global)
       }
     })

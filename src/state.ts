@@ -19,7 +19,8 @@ import {
   exhaustMap,
   observeOn,
   share,
-  filter
+  filter,
+  flatMap
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './api'
@@ -148,6 +149,25 @@ export namespace State {
           jobName,
           artifact,
           startLineNumber,
+          config.url,
+          config.username,
+          config.password
+        )
+      })
+    )
+  }
+
+  export function getJobStatus(
+    pipelineName: string,
+    stageName: string,
+    jobId: string
+  ) {
+    return Configuration.all$.pipe(
+      flatMap(config => {
+        return GoCdApi.getJobStatus(
+          pipelineName,
+          stageName,
+          jobId,
           config.url,
           config.username,
           config.password

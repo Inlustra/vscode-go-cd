@@ -58,7 +58,6 @@ export function getIconFromStage(stage: Stage) {
 }
 
 export function getIconFromPipelineInstance(instance: PipelineInstance) {
-  console.log(instance._embedded.stages.map(stage => stage.status))
   return instance._embedded.stages
     .map(stage => stage.status)
     .map((status, idx, arr) => {

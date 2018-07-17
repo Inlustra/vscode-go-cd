@@ -3,7 +3,10 @@ import * as vscode from 'vscode'
 import { State } from '../state'
 import { map, filter } from 'rxjs/operators'
 import { Pipeline } from '../api/models/pipeline.model'
-import { PipelineGroup } from '../api/models/pipeline-group.model';
+import { PipelineGroup } from '../api/models/pipeline-group.model'
+import { getIconFromPipelineInstance } from './tree/utils'
+import { Icons } from './icons'
+import { PipelineInstance } from '../api/models/pipeline-instance.model'
 
 export class GoCdStatusBar {
   statusBar = vscode.window.createStatusBarItem(
@@ -25,32 +28,37 @@ export class GoCdStatusBar {
       )
   }
 
+  getIconStringFromPipeline(instance: PipelineInstance) {
+    return (
+      instance._embedded.stages
+        .map(stage => stage.status)
+        .map((status, idx, arr) => {
+          switch (status) {
+            case 'Failed':
+              return '$(issue-opened)'
+            case 'Passed':
+              return '$(check)'
+            case 'Building':
+              return '$(sync)'
+            case 'Cancelled':
+              return '$(circle-slash)'
+          }
+        })
+        .filter(x => !!x)
+        .pop() || ''
+    )
+  }
+
   resetStatus(pipeline?: Pipeline) {
-    const lastInstance =
-      pipeline && pipeline._embedded.instances.slice(-1).pop()
-    const lastRunStage =
-      lastInstance &&
-      lastInstance._embedded.stages.filter(stage => !!stage.status).pop()
-    if (pipeline && lastRunStage) {
-      switch (lastRunStage.status) {
-        case 'Passed':
-          this.statusBar.text = '$(check) '
-          break
-        case 'Unknown':
-          this.statusBar.text = '$(sync) '
-          break
-        case 'Failed':
-          this.statusBar.text = '$(alert) '
-          break
-        default:
-          this.statusBar.text = ''
-      }
+    if (pipeline) {
+      const lastInstance = pipeline._embedded.instances.pop()
+      this.statusBar.text = lastInstance
+        ? this.getIconStringFromPipeline(lastInstance)
+        : ''
       if (pipeline.pause_info.paused) {
-        this.statusBar.text = '$(watch)'
-        this.statusBar.text += pipeline.name + 'paused'
+        this.statusBar.text = `$(clock) ${pipeline.name} - Paused`
       } else {
-        this.statusBar.text +=
-          pipeline.name + (lastInstance && ' - ' + lastInstance.label)
+        this.statusBar.text += ` ${pipeline.name} ${lastInstance && lastInstance.label}`
       }
       this.statusBar.show()
     }

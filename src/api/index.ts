@@ -9,6 +9,7 @@ import { map, flatMap, tap, observeOn } from 'rxjs/operators'
 import * as request from 'request'
 import * as requestPromise from 'request-promise-native'
 import { Stage } from './models/stage-history.model'
+import { JobStatus } from './models/job-status.model';
 
 export namespace GoCdApi {
   function performFetch(
@@ -122,5 +123,25 @@ export namespace GoCdApi {
       url = `${url}?startLineNumber=${startLineNumber}`
     }
     return performFetch(url, 'GET', undefined, username, password, true, false)
+  }
+
+  export function getJobStatus(
+    pipelineName: string,
+    stageName: string,
+    jobId: string,
+    host: string,
+    username?: string,
+    password?: string
+  ): Observable<JobStatus[]> {
+    // http://cd.tooling.amazebills.com/go/jobStatus.json?pipelineName=lumo-app&stageName=build-libs&jobId=29181
+    return performFetch(
+      `${host}/jobStatus.json?pipelineName=${pipelineName}&stageName=${stageName}&jobId=${jobId}`,
+      'GET',
+      undefined,
+      username,
+      password,
+      true,
+      true
+    )
   }
 }

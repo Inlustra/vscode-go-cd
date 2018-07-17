@@ -30,6 +30,7 @@ export class PipelineJobNode implements TreeNode {
           stageName: this.stage.name,
           stageCounter: this.stage.counter,
           jobName: this.job.name,
+          jobId: this.job.id,
           artifact: 'cruise-output/console.log'
         }
       ]

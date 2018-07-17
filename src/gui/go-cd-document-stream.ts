@@ -1,16 +1,15 @@
-import * as tmp from 'tmp-promise'
 import {
   Uri,
   window,
   workspace,
   TextDocument,
   WorkspaceEdit,
-  Position
+  Position,
+  StatusBarAlignment
 } from 'vscode'
 import { State } from '../state'
 import {
   first,
-  map,
   flatMap,
   switchMap,
   mapTo,
@@ -24,9 +23,11 @@ import {
 import { Observable, from, merge, interval, of, Subject } from 'rxjs'
 import { showErrorAlert } from './alerts/show-error-alert'
 import { OK } from './alerts/named-actions'
+import { JobStatus } from '../api/models/job-status.model'
 
 export class GoCdDocumentStream {
   public onComplete$: Subject<void> = new Subject()
+  private statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 1)
 
   constructor(
     private pipelineName: string,
@@ -34,38 +35,32 @@ export class GoCdDocumentStream {
     private stageName: string,
     private stageCounter: string,
     private jobName: string,
+    private jobId: string,
     private artifact: string
   ) {}
 
   start() {
     this.openDocument()
       .pipe(
-        catchError(
-          e => showErrorAlert(e, 'Error opening document', OK) || null
-        ),
         takeWhile(doc => !!doc),
         filter((doc): doc is TextDocument => !!doc),
+        tap(doc => this.registerStatusBar(doc)),
         tap(doc => this.registerOnClose(doc)),
         switchMap(doc => merge(of(doc), interval(5000).pipe(mapTo(doc)))),
         takeUntil(this.onComplete$),
-        exhaustMap(doc => {
-          return this.getFile(doc.lineCount).pipe(
-            catchError(
-              e => showErrorAlert(e, 'Error getting artifact', OK) || ''
-            ),
-            flatMap(file => {
-              const edit = new WorkspaceEdit()
-              edit.insert(
-                doc.uri,
-                new Position(doc.lineCount, 0),
-                file.toString()
-              )
-              return workspace.applyEdit(edit)
-            })
-          )
-        })
+        exhaustMap(doc => this.performEdit(doc)),
+        switchMap(() => this.getJobStatus()),
+        tap(status => this.handleJobStatus(status))
       )
       .subscribe(() => {}, () => {}, this.onComplete$.next)
+  }
+
+  private registerStatusBar(doc: TextDocument) {
+    this.statusBarItem.text = '$(sync)'
+    this.statusBarItem.show()
+    this.onComplete$.subscribe(
+      () => this.statusBarItem && this.statusBarItem.dispose()
+    )
   }
 
   private registerOnClose(doc: TextDocument) {
@@ -77,7 +72,7 @@ export class GoCdDocumentStream {
     this.onComplete$.subscribe(() => disposable.dispose())
   }
 
-  private openDocument(): Observable<TextDocument> {
+  private openDocument(): Observable<TextDocument | null> {
     const randomString =
       Math.random()
         .toString(36)
@@ -86,10 +81,30 @@ export class GoCdDocumentStream {
         .toString(36)
         .substring(2, 15)
     return from(
-      workspace.openTextDocument(
-        Uri.parse('untitled:' + randomString + '.log')
-      )
-    ).pipe(tap(doc => window.showTextDocument(doc)))
+      workspace.openTextDocument(Uri.parse('untitled:' + randomString + '.log'))
+    ).pipe(
+      tap(doc => window.showTextDocument(doc)),
+      catchError(e => {
+        showErrorAlert(e, 'Error opening document', OK)
+        this.onComplete$.next()
+        return of(null)
+      })
+    )
+  }
+
+  private getJobStatus(): Observable<JobStatus[]> {
+    return State.getJobStatus(
+      this.pipelineName,
+      this.stageName,
+      this.jobId
+    ).pipe(
+      first(),
+      catchError(e => {
+        showErrorAlert(e, 'Error getting job status', OK)
+        this.onComplete$.next()
+        return of([])
+      })
+    )
   }
 
   private getFile(lineStart?: number): Observable<any> {
@@ -102,5 +117,37 @@ export class GoCdDocumentStream {
       this.artifact,
       lineStart
     ).pipe(first())
+  }
+
+  private performEdit(doc: TextDocument) {
+    return this.getFile(doc.lineCount).pipe(
+      catchError(e => showErrorAlert(e, 'Error getting artifact', OK) || ''),
+      flatMap(file => {
+        const edit = new WorkspaceEdit()
+        edit.insert(doc.uri, new Position(doc.lineCount, 0), file.toString())
+        return workspace.applyEdit(edit)
+      })
+    )
+  }
+
+  private handleJobStatus(status: JobStatus[]) {
+    const jobStatus = status.pop()
+    if (jobStatus) {
+      const { building_info } = jobStatus
+      if (building_info.is_completed === 'true') {
+        this.onComplete$.next()
+      }
+
+      if (this.statusBarItem) {
+        const amountCompleted = Math.floor(
+          (parseInt(building_info.current_build_duration) /
+            parseInt(building_info.last_build_duration)) *
+            100
+        )
+        this.statusBarItem.text = `$(sync) ${this.pipelineName} -> ${
+          this.jobName
+        }... ${amountCompleted}%`
+      }
+    }
   }
 }
