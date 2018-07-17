@@ -10,7 +10,7 @@ export default function showUrlInput(global: boolean = true) {
         Validations.URL.test(value) ? '' : 'Must be a valid URL',
       placeHolder: 'http://my-ci.myUrl.com/go/',
       prompt: `Your ${global ? 'global' : 'workspace'} Go CD url`,
-      value: Configuration.vscodeConfig.get<string>(ConfigurationKeys.URL),
+      value: Configuration.getConfig().url,
       ignoreFocusOut: true
     })
     .then(value => {
