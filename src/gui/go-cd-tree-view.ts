@@ -4,26 +4,15 @@ import {
   EventEmitter,
   Event,
   TreeItem,
-  ProviderResult,
-  TreeItemCollapsibleState,
-  ThemeIcon,
-  Uri,
-  Command
+  ProviderResult
 } from 'vscode'
-import { PipelineGroup } from '../api/models/pipeline-group.model'
-import { Pipeline } from '../api/models/pipeline.model'
+import { PipelineGroup } from '../gocd-api/models/pipeline-group.model'
 import { State } from '../state'
-import {
-  first,
-  map,
-  distinctUntilChanged,
-  tap,
-  catchError
-} from 'rxjs/operators'
+import { distinctUntilChanged } from 'rxjs/operators'
 import { Subscription } from 'rxjs'
-import { Icons } from './icons'
 import { TreeNode } from './tree/tree-node'
 import { PipelineGroupNode } from './tree/pipeline-group.node'
+
 export class GoCdTreeView implements TreeDataProvider<TreeNode> {
   onChangeSubscription: Subscription | null = null
   groups: PipelineGroup[] = []

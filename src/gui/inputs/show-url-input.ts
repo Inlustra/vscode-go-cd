@@ -2,6 +2,7 @@ import { Configuration } from '../../configuration'
 import { ConfigurationKeys } from '../../constants/configuration-keys.const'
 import { Validations } from '../../constants/validations.const'
 import * as vscode from 'vscode'
+import { GoCdApi } from '../../gocd-api';
 
 export default function showUrlInput(global: boolean = true) {
   return vscode.window
@@ -15,7 +16,9 @@ export default function showUrlInput(global: boolean = true) {
     })
     .then(value => {
       if (value) {
-        Configuration.setUrl(value, global)
+        return GoCdApi.getHealth(value)
+          .toPromise()
+          .then(() => Configuration.setUrl(value, global))
       }
     })
 }

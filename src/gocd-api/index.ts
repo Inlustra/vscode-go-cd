@@ -5,13 +5,12 @@ import {
 import { Pipeline } from './models/pipeline.model'
 import { PipelineGroup } from './models/pipeline-group.model'
 import { Observable, from, asapScheduler } from 'rxjs'
-import { map, flatMap, tap, observeOn } from 'rxjs/operators'
-import * as request from 'request'
+import { map, observeOn } from 'rxjs/operators'
 import * as requestPromise from 'request-promise-native'
-import { Stage } from './models/stage-history.model'
 import { JobStatus } from './models/job-status.model';
 
 export namespace GoCdApi {
+  
   function performFetch(
     url: string,
     method?: string,
@@ -38,6 +37,10 @@ export namespace GoCdApi {
         json
       })
     ).pipe(observeOn(asapScheduler))
+  }
+
+  export function getHealth(host: string): Observable<{ health: string }> {
+    return performFetch(`${host}/api/v1/health`)
   }
 
   export function getPipelineGroups(

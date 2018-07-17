@@ -1,5 +1,5 @@
 import { TreeNode } from "./tree-node";
-import { PipelineGroup } from "../../api/models/pipeline-group.model";
+import { PipelineGroup } from "../../gocd-api/models/pipeline-group.model";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { PipelineNode } from "./pipeline.node";
 

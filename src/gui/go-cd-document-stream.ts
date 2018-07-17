@@ -23,7 +23,8 @@ import {
 import { Observable, from, merge, interval, of, Subject } from 'rxjs'
 import { showErrorAlert } from './alerts/show-error-alert'
 import { OK } from './alerts/named-actions'
-import { JobStatus } from '../api/models/job-status.model'
+import { JobStatus } from '../gocd-api/models/job-status.model'
+import { Api } from '../api';
 
 export class GoCdDocumentStream {
   public onComplete$: Subject<void> = new Subject()
@@ -93,7 +94,7 @@ export class GoCdDocumentStream {
   }
 
   private getJobStatus(): Observable<JobStatus[]> {
-    return State.getJobStatus(
+    return Api.getJobStatus(
       this.pipelineName,
       this.stageName,
       this.jobId
@@ -108,7 +109,7 @@ export class GoCdDocumentStream {
   }
 
   private getFile(lineStart?: number): Observable<any> {
-    return State.getArtifactFile(
+    return Api.getArtifactFile(
       this.pipelineName,
       this.pipelineCounter,
       this.stageName,

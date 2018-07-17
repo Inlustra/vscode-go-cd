@@ -1,9 +1,9 @@
 import { Icons } from '../icons'
-import { Stage } from '../../api/models/stage-history.model'
-import { Result } from '../../api/models/result.model'
-import { Job, JobState } from '../../api/models/job.model'
-import { PipelineHistory } from '../../api/models/pipeline-history.model'
-import { PipelineInstance } from '../../api/models/pipeline-instance.model'
+import { Stage } from '../../gocd-api/models/stage-history.model'
+import { Result } from '../../gocd-api/models/result.model'
+import { Job, JobState } from '../../gocd-api/models/job.model'
+import { PipelineHistory } from '../../gocd-api/models/pipeline-history.model'
+import { PipelineInstance } from '../../gocd-api/models/pipeline-instance.model'
 
 export function getIconFromResult(result: Result) {
   switch (result) {

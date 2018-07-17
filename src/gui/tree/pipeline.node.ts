@@ -1,15 +1,14 @@
 import { TreeNode } from './tree-node'
-import { PipelineGroup } from '../../api/models/pipeline-group.model'
-import { Pipeline } from '../../api/models/pipeline.model'
+import { Pipeline } from '../../gocd-api/models/pipeline.model'
 import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { Icons } from '../icons'
 import { getIconFromPipelineInstance } from './utils'
-import { State } from '../../state'
 import { first } from 'rxjs/operators'
 import { showErrorAlert } from '../alerts/show-error-alert'
 import { PipelineHistoryNode } from './pipeline-history.node'
 import { REFRESH_PIPELINES, OK } from '../alerts/named-actions'
-import { PaginatedPipelineHistory } from '../../api/models/pipeline-history.model'
+import { PaginatedPipelineHistory } from '../../gocd-api/models/pipeline-history.model'
+import { Api } from '../../api';
 
 export class PipelineNode implements TreeNode {
   constructor(public pipeline: Pipeline) {}
@@ -72,7 +71,7 @@ export class PipelineNode implements TreeNode {
   }
 
   getPipelineHistory(): Promise<PaginatedPipelineHistory> {
-    return State.getPipelineHistory(this.pipeline.name)
+    return Api.getPipelineHistory(this.pipeline.name)
       .pipe(first())
       .toPromise()
   }

@@ -1,12 +1,8 @@
-import { PipelineHistory } from '../api/models/pipeline-history.model'
 import * as vscode from 'vscode'
 import { State } from '../state'
 import { map, filter } from 'rxjs/operators'
-import { Pipeline } from '../api/models/pipeline.model'
-import { PipelineGroup } from '../api/models/pipeline-group.model'
-import { getIconFromPipelineInstance } from './tree/utils'
-import { Icons } from './icons'
-import { PipelineInstance } from '../api/models/pipeline-instance.model'
+import { Pipeline } from '../gocd-api/models/pipeline.model'
+import { PipelineInstance } from '../gocd-api/models/pipeline-instance.model'
 
 export class GoCdStatusBar {
   statusBar = vscode.window.createStatusBarItem(

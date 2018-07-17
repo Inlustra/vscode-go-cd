@@ -10,7 +10,7 @@ import { State } from '../state'
 import { distinctUntilChanged } from 'rxjs/operators'
 import { Subscription } from 'rxjs'
 import { TreeNode } from './tree/tree-node'
-import { Pipeline } from '../api/models/pipeline.model'
+import { Pipeline } from '../gocd-api/models/pipeline.model'
 import { PipelineNode } from './tree/pipeline.node'
 
 export class GoCdSelectedTreeView implements TreeDataProvider<TreeNode> {
