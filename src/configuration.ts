@@ -1,14 +1,11 @@
-import { GoCdConfiguration } from './models/go-cd-config.model'
 import * as vscode from 'vscode'
 import { ConfigurationKeys } from './constants/configuration-keys.const'
 import {
   Observable,
   Subject,
   BehaviorSubject,
-  combineLatest,
-  ReplaySubject
 } from 'rxjs'
-import { distinctUntilChanged, map, tap } from 'rxjs/operators'
+import { distinctUntilChanged } from 'rxjs/operators'
 
 interface GoCDConfig {
   url: string
@@ -32,7 +29,7 @@ export namespace Configuration {
     getConfig()
   )
 
-  export const all$: Observable<GoCdConfiguration> = config$.pipe(
+  export const all$: Observable<GoCDConfig> = config$.pipe(
     distinctUntilChanged()
   )
 
