@@ -65,6 +65,6 @@ export class GoCdStatusBar {
   }
 
   refresh() {
-    State.forceRefresh.next()
+    State.forceRefresh$.next()
   }
 }

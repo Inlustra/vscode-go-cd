@@ -34,15 +34,15 @@ import {
 export namespace State {
   export let paused: boolean = false
 
-  export const forceRefresh = new Subject<void>()
+  export const forceRefresh$ = new Subject<void>()
 
   const configuration$ = Configuration.all$.pipe(
     skipWhile(config => !config.url),
     switchMap(config =>
       merge(
         of(null),
-        forceRefresh.pipe(tap(() => console.log('Forced Refresh'))),
-        interval(Math.max(config.refreshInterval, 1000)).pipe(
+        forceRefresh$.pipe(tap(() => console.log('Forced Refresh'))),
+        interval(Math.max(config.refreshInterval, 5000)).pipe(
           tap(() => console.log('Regular Refresh'))
         )
       ).pipe(mapTo(config))

@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
   new GoCdStatusBar().init()
   new GoCdSelectedTreeView().init()
   new GoCdTreeView().init()
-  State.forceRefresh.next()
+  State.forceRefresh$.next()
 }
 
 // this method is called when your extension is deactivated
