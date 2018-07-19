@@ -2,10 +2,7 @@ import {
   merge,
   interval,
   Subject,
-  from,
   of,
-  asapScheduler,
-  Observable
 } from 'rxjs'
 import {
   map,
@@ -15,12 +12,9 @@ import {
   publishReplay,
   tap,
   withLatestFrom,
-  catchError,
   exhaustMap,
-  observeOn,
   share,
   filter,
-  flatMap
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './gocd-api'

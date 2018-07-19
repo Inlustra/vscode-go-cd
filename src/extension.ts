@@ -6,6 +6,7 @@ import { GoCdTreeView } from './gui/go-cd-tree-view'
 import { State } from './state'
 import { Icons } from './gui/icons'
 import { GoCdSelectedTreeView } from './gui/go-cd-selected-tree-view'
+import { GoCdJobWatcher } from './gui/go-cd-job-watcher';
 
 export function activate(context: vscode.ExtensionContext) {
   Icons.setContext(context)
@@ -13,6 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
   new GoCdStatusBar().init()
   new GoCdSelectedTreeView().init()
   new GoCdTreeView().init()
+  new GoCdJobWatcher().init()
   State.forceRefresh$.next()
 }
 
