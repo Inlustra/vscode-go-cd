@@ -1,21 +1,21 @@
-export interface Material {
+export interface PipelineGroupMaterial {
   fingerprint: string
   type: string
   description: string
 }
 
-export interface Stage {
+export interface PipelineGroupStage {
   name: string
 }
 
-export interface Pipeline {
+export interface PipelineGroupPipeline {
   label: string
-  materials: Material[]
-  stages: Stage[]
+  materials: PipelineGroupMaterial[]
+  stages: PipelineGroupStage[]
   name: string
 }
 
 export interface PipelineGroup {
   name: string
-  pipelines: Pipeline[]
+  pipelines: PipelineGroupPipeline[]
 }

@@ -43,6 +43,10 @@
     },
     "commands": [
       {
+        "command": "gocd.determineGitPipelines",
+        "title": "Go CD: Determine Git Pipelines"
+      },
+      {
         "command": "gocd.openArtifact",
         "title": "Go CD: Open Artifact"
       },

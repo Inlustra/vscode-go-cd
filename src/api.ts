@@ -3,6 +3,19 @@ import { switchMap, exhaustMap, flatMap } from 'rxjs/operators'
 import { GoCdApi } from './gocd-api'
 
 export namespace Api {
+
+  export function getPipelineGroups() {
+    return Configuration.all$.pipe(
+      switchMap(config =>
+        GoCdApi.getPipelineGroups(
+          config.url,
+          config.username,
+          config.password
+        )
+      )
+    )
+  }
+
   export function getPipelineHistory(name: string) {
     return Configuration.all$.pipe(
       switchMap(config =>

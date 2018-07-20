@@ -7,10 +7,10 @@ import { DashboardPipelineGroup } from './models/dashboard-pipeline-group.model'
 import { Observable, from, asapScheduler } from 'rxjs'
 import { map, observeOn } from 'rxjs/operators'
 import * as requestPromise from 'request-promise-native'
-import { JobStatus } from './models/job-status.model';
+import { JobStatus } from './models/job-status.model'
+import { PipelineGroup } from './models/pipeline-groups.model'
 
 export namespace GoCdApi {
-  
   function performFetch(
     url: string,
     method?: string,
@@ -55,7 +55,25 @@ export namespace GoCdApi {
       username,
       password
     ).pipe(
-      map(pipeline => pipeline._embedded.pipeline_groups as DashboardPipelineGroup[])
+      map(
+        pipeline =>
+          pipeline._embedded.pipeline_groups as DashboardPipelineGroup[]
+      )
+    )
+  }
+
+  export function getPipelineGroups(
+    host: string,
+    username?: string,
+    password?: string
+  ): Observable<PipelineGroup[]> {
+    return performFetch(
+      `${host}/api/config/pipeline_groups`,
+      'GET',
+      undefined,
+      username,
+      password,
+      false
     )
   }
 

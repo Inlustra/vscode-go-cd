@@ -5,7 +5,7 @@ import { Stage } from '../../gocd-api/models/stage-history.model'
 import { TreeItem } from 'vscode'
 import { Job } from '../../gocd-api/models/job.model'
 import { getIconFromJob } from './utils'
-import { OPEN_ARTIFACT_COMMAND } from '../../commands'
+import { CommandKeys } from '../../constants/command-keys.const'
 
 export class PipelineJobNode implements TreeNode {
   constructor(
@@ -20,7 +20,7 @@ export class PipelineJobNode implements TreeNode {
     treeItem.iconPath = getIconFromJob(this.job)
     treeItem.command = {
       title: 'Go CD: Open Artifact',
-      command: OPEN_ARTIFACT_COMMAND,
+      command: CommandKeys.OPEN_ARTIFACT_COMMAND,
       arguments: [
         {
           pipelineName: this.pipeline.name,
