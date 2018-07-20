@@ -92,9 +92,11 @@ export namespace State {
 
   export const selectedPipeline$ = pipelines$.pipe(
     withLatestFrom(configuration$),
-    filter(([pipelines$, config]) => !!config.pipeline),
-    map(([pipelines, config]) =>
-      pipelines.find(pipeline => pipeline.name === config.pipeline)
+    map(
+      ([pipelines, config]) =>
+        config.pipeline
+          ? pipelines.find(pipeline => pipeline.name === config.pipeline)
+          : undefined
     ),
     share()
   )

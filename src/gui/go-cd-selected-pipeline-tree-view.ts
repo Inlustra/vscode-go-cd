@@ -14,19 +14,19 @@ import { TreeNode } from './tree/tree-node'
 import { Pipeline } from '../gocd-api/models/pipeline.model'
 import { PipelineNode } from './tree/pipeline.node'
 
-export class GoCdPipelineTreeView implements TreeDataProvider<TreeNode> {
+export class GoCdSelectedPipelineTreeView implements TreeDataProvider<TreeNode> {
   onChangeSubscription?: Subscription
   pipeline?: Pipeline
-  public treeView: TreeView<TreeNode>
+  private treeView: TreeView<TreeNode>
 
-  constructor(private viewId: string, private pipelineName: string) {
-    this.treeView = window.createTreeView(this.viewId, {
+  constructor() {
+    this.treeView = window.createTreeView('go-cd-selected-pipeline', {
       treeDataProvider: this
     })
   }
 
   init() {
-    this.onChangeSubscription = State.getPipeline$(this.pipelineName)
+    this.onChangeSubscription = State.selectedPipeline$
       .pipe(distinctUntilChanged())
       .subscribe(
         pipeline =>
