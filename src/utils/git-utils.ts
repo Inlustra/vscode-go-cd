@@ -7,9 +7,14 @@ import {
   concatAll,
   toArray,
   first,
-  tap
+  tap,
+  retry,
+  retryWhen,
+  take,
+  delay
 } from 'rxjs/operators'
 import { execSync } from 'child_process'
+import { RxUtils } from './rx-utils'
 
 export namespace GitUtils {
   export function getGitPath(): Observable<string> {
@@ -33,12 +38,17 @@ export namespace GitUtils {
   }
 
   export function getGitOrigins(): Observable<string[]> {
-    return forkJoin(getGitPath(), getGitRepositoryUris()).pipe(
+    return forkJoin(
+      getGitPath().pipe(RxUtils.retryWithDelay(1000, 2)),
+      getGitRepositoryUris().pipe(RxUtils.retryWithDelay(1000, 2))
+    ).pipe(
       flatMap(([gitPath, uris]) =>
         uris.map(uri => {
           try {
             return execSync(
-              `${gitPath} --git-dir=${uri.path}/.git config --get remote.origin.url`
+              `${gitPath} --git-dir=${
+                uri.path
+              }/.git config --get remote.origin.url`
             )
           } catch (e) {
             console.log('error executing...', e)
@@ -46,13 +56,9 @@ export namespace GitUtils {
           }
         })
       ),
-      tap(console.log),
       filter((x): x is Buffer => !!x),
       map(x => x.toString()),
-      concatAll(),
-      tap(console.log),
       toArray(),
-      tap(console.log),
       first()
     )
   }

@@ -1,9 +1,4 @@
-import {
-  merge,
-  interval,
-  Subject,
-  of,
-} from 'rxjs'
+import { merge, interval, Subject, of } from 'rxjs'
 import {
   map,
   switchMap,
@@ -14,7 +9,7 @@ import {
   withLatestFrom,
   exhaustMap,
   share,
-  filter,
+  filter
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './gocd-api'
@@ -22,6 +17,7 @@ import {
   PipelineHistory,
   PaginatedPipelineHistory
 } from './gocd-api/models/pipeline-history.model'
+import { GitUtils } from './utils/git-utils'
 
 export namespace State {
   export let paused: boolean = false
@@ -41,6 +37,14 @@ export namespace State {
     ),
     skipWhile(() => paused),
     tap(() => console.log('out!'))
+  )
+
+  export const watchedPipelines$ = configuration$.pipe(
+    exhaustMap(({ url, username, password }) =>
+      GoCdApi.getDashboardPipelineGroups(url, username, password)
+    ),
+    withLatestFrom(GitUtils.getGitOrigins().pipe(share())),
+    map(([groups, gitUrls]) => {})
   )
 
   export const dashboardPipelineGroups$ = configuration$.pipe(
@@ -75,7 +79,7 @@ export namespace State {
   export function getPipeline$(name: string) {
     return pipelines$.pipe(
       map(pipelines => pipelines.find(pipeline => pipeline.name === name)),
-      publishReplay(1)
+      share()
     )
   }
 }

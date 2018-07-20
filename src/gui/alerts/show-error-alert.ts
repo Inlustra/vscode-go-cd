@@ -7,10 +7,10 @@ export function showErrorAlert(
   ...actions: NamedAction[]
 ) {
   let message = title
-  if (err.status) {
+  if (err && err.status) {
     message = message + ': ' + err.status
   }
-  if (err.message) {
+  if (err && err.message) {
     message = message + '\n ' + err.message
   }
   const buttons = actions.map(action => action.title)

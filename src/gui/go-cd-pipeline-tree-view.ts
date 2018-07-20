@@ -4,7 +4,8 @@ import {
   EventEmitter,
   Event,
   TreeItem,
-  ProviderResult
+  ProviderResult,
+  TreeView
 } from 'vscode'
 import { State } from '../state'
 import { distinctUntilChanged } from 'rxjs/operators'
@@ -13,13 +14,19 @@ import { TreeNode } from './tree/tree-node'
 import { Pipeline } from '../gocd-api/models/pipeline.model'
 import { PipelineNode } from './tree/pipeline.node'
 
-export class GoCdSelectedTreeView implements TreeDataProvider<TreeNode> {
+export class GoCdPipelineTreeView implements TreeDataProvider<TreeNode> {
   onChangeSubscription?: Subscription
   pipeline?: Pipeline
+  public treeView: TreeView<TreeNode>
+
+  constructor(private viewId: string, private pipelineName: string) {
+    this.treeView = window.createTreeView(this.viewId, {
+      treeDataProvider: this
+    })
+  }
 
   init() {
-    window.registerTreeDataProvider('go-cd-selected-pipeline', this)
-    this.onChangeSubscription = State.selectedPipeline$
+    this.onChangeSubscription = State.getPipeline$(this.pipelineName)
       .pipe(distinctUntilChanged())
       .subscribe(
         pipeline =>

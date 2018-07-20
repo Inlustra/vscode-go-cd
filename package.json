@@ -31,9 +31,24 @@
     "views": {
       "go-cd-view": [
         {
-          "id": "go-cd-selected-pipeline",
-          "name": "Selected Pipeline",
-          "when": "gocd.pipeline != null"
+          "id": "go-cd-selected-pipeline-1",
+          "name": "Selected Pipeline"
+        },
+        {
+          "id": "go-cd-selected-pipeline-2",
+          "name": "Selected Pipeline"
+        },
+        {
+          "id": "go-cd-selected-pipeline-3",
+          "name": "Selected Pipeline"
+        },
+        {
+          "id": "go-cd-selected-pipeline-4",
+          "name": "Selected Pipeline"
+        },
+        {
+          "id": "go-cd-selected-pipeline-5",
+          "name": "Selected Pipeline"
         },
         {
           "id": "go-cd-pipelines",
