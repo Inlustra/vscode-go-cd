@@ -13,15 +13,10 @@ export class GoCdStatusBar {
   constructor() {}
 
   init() {
-    State.selectedPipeline$
-      .pipe(
-        filter(pipeline => !!pipeline),
-        map(pipeline => pipeline && pipeline)
-      )
-      .subscribe(
-        pipeline => this.resetStatus(pipeline),
-        err => console.error(err)
-      )
+    State.selectedPipeline$.subscribe(
+      pipeline => this.resetStatus(pipeline),
+      err => console.error(err)
+    )
   }
 
   getIconStringFromPipeline(instance: PipelineInstance) {
@@ -54,9 +49,12 @@ export class GoCdStatusBar {
       if (pipeline.pause_info.paused) {
         this.statusBar.text = `$(clock) ${pipeline.name} - Paused`
       } else {
-        this.statusBar.text += ` ${pipeline.name} ${lastInstance && lastInstance.label}`
+        this.statusBar.text += ` ${pipeline.name} ${lastInstance &&
+          lastInstance.label}`
       }
       this.statusBar.show()
+    } else {
+      this.statusBar.hide()
     }
   }
 
