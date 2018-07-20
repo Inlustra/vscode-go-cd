@@ -6,7 +6,7 @@ import {
   TreeItem,
   ProviderResult
 } from 'vscode'
-import { PipelineGroup } from '../gocd-api/models/pipeline-group.model'
+import { DashboardPipelineGroup } from '../gocd-api/models/dashboard-pipeline-group.model'
 import { State } from '../state'
 import { distinctUntilChanged } from 'rxjs/operators'
 import { Subscription } from 'rxjs'
@@ -15,11 +15,11 @@ import { PipelineGroupNode } from './tree/pipeline-group.node'
 
 export class GoCdTreeView implements TreeDataProvider<TreeNode> {
   onChangeSubscription: Subscription | null = null
-  groups: PipelineGroup[] = []
+  groups: DashboardPipelineGroup[] = []
 
   init() {
     window.registerTreeDataProvider('go-cd-pipelines', this)
-    this.onChangeSubscription = State.pipelineGroups$
+    this.onChangeSubscription = State.dashboardPipelineGroups$
       .pipe(distinctUntilChanged())
       .subscribe(
         groups => (this.groups = groups) && this._onDidChangeTreeData.fire()

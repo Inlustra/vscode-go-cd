@@ -43,14 +43,14 @@ export namespace State {
     tap(() => console.log('out!'))
   )
 
-  export const pipelineGroups$ = configuration$.pipe(
+  export const dashboardPipelineGroups$ = configuration$.pipe(
     exhaustMap(({ url, username, password }) =>
-      GoCdApi.getPipelineGroups(url, username, password)
+      GoCdApi.getDashboardPipelineGroups(url, username, password)
     ),
     share()
   )
 
-  export const pipelines$ = pipelineGroups$.pipe(
+  export const pipelines$ = dashboardPipelineGroups$.pipe(
     map(
       pipelineGroups =>
         pipelineGroups &&

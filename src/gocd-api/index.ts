@@ -3,7 +3,7 @@ import {
   PaginatedPipelineHistory
 } from './models/pipeline-history.model'
 import { Pipeline } from './models/pipeline.model'
-import { PipelineGroup } from './models/pipeline-group.model'
+import { DashboardPipelineGroup } from './models/dashboard-pipeline-group.model'
 import { Observable, from, asapScheduler } from 'rxjs'
 import { map, observeOn } from 'rxjs/operators'
 import * as requestPromise from 'request-promise-native'
@@ -43,11 +43,11 @@ export namespace GoCdApi {
     return performFetch(`${host}/api/v1/health`)
   }
 
-  export function getPipelineGroups(
+  export function getDashboardPipelineGroups(
     host: string,
     username?: string,
     password?: string
-  ): Observable<PipelineGroup[]> {
+  ): Observable<DashboardPipelineGroup[]> {
     return performFetch(
       `${host}/api/dashboard`,
       'GET',
@@ -55,7 +55,7 @@ export namespace GoCdApi {
       username,
       password
     ).pipe(
-      map(pipeline => pipeline._embedded.pipeline_groups as PipelineGroup[])
+      map(pipeline => pipeline._embedded.pipeline_groups as DashboardPipelineGroup[])
     )
   }
 
@@ -64,7 +64,7 @@ export namespace GoCdApi {
     username?: string,
     password?: string
   ): Observable<Pipeline[]> {
-    return getPipelineGroups(host, username, password).pipe(
+    return getDashboardPipelineGroups(host, username, password).pipe(
       map(
         pipelineGroups =>
           pipelineGroups &&

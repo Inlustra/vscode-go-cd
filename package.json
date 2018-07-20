@@ -105,7 +105,6 @@
   },
   "dependencies": {
     "request-promise-native": "^1.0.5",
-    "rxjs": "^6.2.0",
-    "tmp-promise": "^1.0.5"
+    "rxjs": "^6.2.0"
   }
 }

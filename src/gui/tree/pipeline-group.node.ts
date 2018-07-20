@@ -1,11 +1,11 @@
 import { TreeNode } from "./tree-node";
-import { PipelineGroup } from "../../gocd-api/models/pipeline-group.model";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { PipelineNode } from "./pipeline.node";
+import { DashboardPipelineGroup } from "../../gocd-api/models/dashboard-pipeline-group.model";
 
 export class PipelineGroupNode implements TreeNode {
     
-    constructor(public group: PipelineGroup) {}
+    constructor(public group: DashboardPipelineGroup) {}
   
     toTreeItem(): TreeItem {
       return new TreeItem(this.group.name, TreeItemCollapsibleState.Collapsed)

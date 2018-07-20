@@ -1,5 +1,5 @@
 import { Pipeline } from './pipeline.model'
-export interface PipelineGroup {
+export interface DashboardPipelineGroup {
   name: string
   _embedded: {
     pipelines: Pipeline[]
