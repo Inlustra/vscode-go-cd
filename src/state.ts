@@ -9,7 +9,9 @@ import {
   withLatestFrom,
   exhaustMap,
   share,
-  filter
+  filter,
+  catchError,
+  distinctUntilChanged
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './gocd-api'
@@ -18,6 +20,7 @@ import {
   PaginatedPipelineHistory
 } from './gocd-api/models/pipeline-history.model'
 import { GitUtils } from './utils/git-utils'
+import { PipelineGroupPipeline } from './gocd-api/models/pipeline-groups.model'
 
 export namespace State {
   export let paused: boolean = false
@@ -35,16 +38,36 @@ export namespace State {
         )
       ).pipe(mapTo(config))
     ),
-    skipWhile(() => paused),
-    tap(() => console.log('out!'))
+    skipWhile(() => paused)
   )
 
-  export const watchedPipelines$ = configuration$.pipe(
+  export const gitUrls$ = GitUtils.getGitOrigins().pipe(
+    catchError(err => of(null)),
+    share()
+  )
+
+  export const openPipelines$ = configuration$.pipe(
     exhaustMap(({ url, username, password }) =>
-      GoCdApi.getDashboardPipelineGroups(url, username, password)
+      GoCdApi.getPipelineGroups(url, username, password)
     ),
-    withLatestFrom(GitUtils.getGitOrigins().pipe(share())),
-    map(([groups, gitUrls]) => {})
+    withLatestFrom(gitUrls$),
+    map(([groups, gitUrls]) => {
+      if (gitUrls) {
+        const arr: PipelineGroupPipeline[] = []
+        return arr
+          .concat(...groups.map(groups => groups.pipelines))
+          .filter(pipeline =>
+            pipeline.materials
+              .map(material => material.description)
+              .some(description =>
+                gitUrls.some(url => description.includes(url))
+              )
+          )
+      }
+      return []
+    }),
+    distinctUntilChanged(),
+    share()
   )
 
   export const dashboardPipelineGroups$ = configuration$.pipe(

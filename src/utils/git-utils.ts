@@ -57,7 +57,7 @@ export namespace GitUtils {
         })
       ),
       filter((x): x is Buffer => !!x),
-      map(x => x.toString()),
+      map(x => x.toString().trim()),
       toArray(),
       first()
     )

@@ -3,7 +3,7 @@ import SetGlobalConfiguration from './set-global-configuration.command'
 import ForceRefresh from './refresh-pipeline.command'
 import OpenArtifact from './open-artifact.command'
 import { CommandKeys } from '../constants/command-keys.const'
-import { DetermineGitPipelines } from './determine-git-pipelines.command';
+import { GuessSelectedPipeline } from './guess-selected-pipeline.command';
 
 export const Commands = [
   vscode.commands.registerCommand(
@@ -19,7 +19,7 @@ export const Commands = [
     OpenArtifact
   ),
   vscode.commands.registerCommand(
-    CommandKeys.DETERMINE_GIT_PIPELINES,
-    DetermineGitPipelines
+    CommandKeys.GUESS_SELECTED_PIPELINE,
+    GuessSelectedPipeline
   )
 ]
