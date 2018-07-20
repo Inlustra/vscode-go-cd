@@ -1,22 +1,31 @@
-import * as vscode from 'vscode'
+import { Uri, extensions } from 'vscode'
 import { from, throwError, Observable, forkJoin } from 'rxjs'
-import { map, filter, flatMap, concatAll, toArray } from 'rxjs/operators'
+import {
+  map,
+  filter,
+  flatMap,
+  concatAll,
+  toArray,
+  first,
+  tap
+} from 'rxjs/operators'
 import { execSync } from 'child_process'
 
 export namespace GitUtils {
   export function getGitPath(): Observable<string> {
-    let gitExt = vscode.extensions.getExtension('vscode.git')
+    let gitExt = extensions.getExtension('vscode.git')
     if (gitExt) {
-      return from(<string>gitExt.exports.getGitPath())
+      return from(<Promise<string>>gitExt.exports.getGitPath())
     }
     return throwError(new Error('Could not get git extension, disabled? '))
   }
 
-  export function getGitRepositoryUris(): Observable<vscode.Uri[]> {
-    let gitExt = vscode.extensions.getExtension('vscode.git')
+  type Repo = { rootUri: Uri }
+  export function getGitRepositoryUris(): Observable<Uri[]> {
+    let gitExt = extensions.getExtension('vscode.git')
     if (gitExt) {
-      return from(gitExt.exports.getRepositories()).pipe(
-        map((repo: any) => repo.rootUri),
+      return from(<Promise<Repo[]>>gitExt.exports.getRepositories()).pipe(
+        map((repos: Repo[]) => repos.map(repo => repo.rootUri)),
         filter(uri => !!uri)
       )
     }
@@ -26,20 +35,25 @@ export namespace GitUtils {
   export function getGitOrigins(): Observable<string[]> {
     return forkJoin(getGitPath(), getGitRepositoryUris()).pipe(
       flatMap(([gitPath, uris]) =>
-        uris.map(repoPath => {
+        uris.map(uri => {
           try {
             return execSync(
-              `${gitPath} --git-dir=${repoPath}/.git config --get remote.origin.url`
+              `${gitPath} --git-dir=${uri.path}/.git config --get remote.origin.url`
             )
           } catch (e) {
+            console.log('error executing...', e)
             return null
           }
         })
       ),
+      tap(console.log),
       filter((x): x is Buffer => !!x),
       map(x => x.toString()),
       concatAll(),
-      toArray()
+      tap(console.log),
+      toArray(),
+      tap(console.log),
+      first()
     )
   }
 }
