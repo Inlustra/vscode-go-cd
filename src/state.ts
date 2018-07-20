@@ -46,6 +46,26 @@ export namespace State {
     share()
   )
 
+  export const dashboardPipelineGroups$ = configuration$.pipe(
+    exhaustMap(({ url, username, password }) =>
+      GoCdApi.getDashboardPipelineGroups(url, username, password)
+    ),
+    share()
+  )
+
+  export const pipelines$ = dashboardPipelineGroups$.pipe(
+    map(
+      pipelineGroups =>
+        pipelineGroups &&
+        pipelineGroups
+          .map(pipeline => pipeline._embedded.pipelines)
+          .reduce((previousValue = [], currentPipelines) =>
+            previousValue.concat(currentPipelines)
+          )
+    ),
+    share()
+  )
+
   export const openPipelines$ = configuration$.pipe(
     exhaustMap(({ url, username, password }) =>
       GoCdApi.getPipelineGroups(url, username, password)
@@ -66,27 +86,17 @@ export namespace State {
       }
       return []
     }),
-    distinctUntilChanged(),
-    share()
-  )
-
-  export const dashboardPipelineGroups$ = configuration$.pipe(
-    exhaustMap(({ url, username, password }) =>
-      GoCdApi.getDashboardPipelineGroups(url, username, password)
-    ),
-    share()
-  )
-
-  export const pipelines$ = dashboardPipelineGroups$.pipe(
-    map(
-      pipelineGroups =>
-        pipelineGroups &&
-        pipelineGroups
-          .map(pipeline => pipeline._embedded.pipelines)
-          .reduce((previousValue = [], currentPipelines) =>
-            previousValue.concat(currentPipelines)
+    map(pipelines => pipelines.map(pipeline => pipeline.name)),
+    switchMap(names =>
+      pipelines$.pipe(
+        map(pipelines =>
+          pipelines.filter(pipeline =>
+            names.some(name => pipeline.name === name)
           )
+        )
+      )
     ),
+    distinctUntilChanged(),
     share()
   )
 
