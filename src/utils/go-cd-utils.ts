@@ -1,9 +1,10 @@
-import { Icons } from '../icons'
-import { Stage } from '../../gocd-api/models/stage-history.model'
-import { Result } from '../../gocd-api/models/result.model'
-import { Job, JobState } from '../../gocd-api/models/job.model'
-import { PipelineHistory } from '../../gocd-api/models/pipeline-history.model'
-import { PipelineInstance } from '../../gocd-api/models/pipeline-instance.model'
+import { Icons } from '../gui/icons'
+import { Stage } from '../gocd-api/models/stage-history.model'
+import { Result } from '../gocd-api/models/result.model'
+import { Job, JobState } from '../gocd-api/models/job.model'
+import { PipelineHistory } from '../gocd-api/models/pipeline-history.model'
+import { PipelineInstance } from '../gocd-api/models/pipeline-instance.model'
+import { Pipeline } from '../gocd-api/models/pipeline.model'
 
 export function getIconFromResult(result: Result) {
   switch (result) {
@@ -78,4 +79,8 @@ export function getIconFromPipelineInstance(instance: PipelineInstance) {
 
 export function getIconFromHistory(history: PipelineHistory) {
   return history.stages.map(getIconFromStage).pop()
+}
+
+export function getLatestPipelineInstance(pipeline: Pipeline) {
+  return pipeline._embedded.instances.slice(-1).pop()
 }

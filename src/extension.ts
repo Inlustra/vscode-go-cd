@@ -8,7 +8,7 @@ import { Icons } from './gui/icons'
 import { GoCdJobWatcher } from './gui/go-cd-job-watcher'
 import { GoCdSelectedPipelineTreeView } from './gui/go-cd-selected-pipeline-tree-view'
 import { Configuration } from './configuration'
-import { map, first } from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { GuessSelectedPipeline } from './commands/guess-selected-pipeline.command'
 
 export function activate(context: vscode.ExtensionContext) {
@@ -17,6 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
   new GoCdStatusBar().init()
   new GoCdTreeView().init()
   new GoCdSelectedPipelineTreeView().init()
+  new GoCdJobWatcher().init()
   State.forceRefresh$.next()
   const { pipeline } = Configuration.getConfig()
   if (pipeline === '') {

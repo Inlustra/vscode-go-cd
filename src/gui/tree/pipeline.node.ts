@@ -2,27 +2,26 @@ import { TreeNode } from './tree-node'
 import { Pipeline } from '../../gocd-api/models/pipeline.model'
 import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { Icons } from '../icons'
-import { getIconFromPipelineInstance } from './utils'
+import {
+  getIconFromPipelineInstance,
+  getLatestPipelineInstance
+} from '../../utils/go-cd-utils'
 import { first } from 'rxjs/operators'
 import { showErrorAlert } from '../alerts/show-error-alert'
 import { PipelineHistoryNode } from './pipeline-history.node'
 import { REFRESH_PIPELINES, OK } from '../alerts/named-actions'
 import { PaginatedPipelineHistory } from '../../gocd-api/models/pipeline-history.model'
-import { Api } from '../../api';
+import { Api } from '../../api'
 
 export class PipelineNode implements TreeNode {
   constructor(public pipeline: Pipeline) {}
-
-  getLatestInstance() {
-    return this.pipeline._embedded.instances.slice(-1).pop()
-  }
 
   toTreeItem(): TreeItem {
     const treeItem = new TreeItem(
       this.pipeline.name,
       TreeItemCollapsibleState.Collapsed
     )
-    const instance = this.getLatestInstance()
+    const instance = getLatestPipelineInstance(this.pipeline)
     if (instance) {
       treeItem.iconPath = getIconFromPipelineInstance(instance)
       treeItem.label += ` - ${instance && instance.label}`

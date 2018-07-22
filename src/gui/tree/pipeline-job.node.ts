@@ -4,7 +4,7 @@ import { PipelineHistory } from '../../gocd-api/models/pipeline-history.model'
 import { Stage } from '../../gocd-api/models/stage-history.model'
 import { TreeItem } from 'vscode'
 import { Job } from '../../gocd-api/models/job.model'
-import { getIconFromJob } from './utils'
+import { getIconFromJob } from '../../utils/go-cd-utils'
 import { CommandKeys } from '../../constants/command-keys.const'
 
 export class PipelineJobNode implements TreeNode {

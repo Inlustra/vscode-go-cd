@@ -3,7 +3,7 @@ import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { PipelineHistory } from '../../gocd-api/models/pipeline-history.model'
 import { Stage } from '../../gocd-api/models/stage-history.model'
 import { Pipeline } from '../../gocd-api/models/pipeline.model'
-import { getIconFromStage } from './utils'
+import { getIconFromStage } from '../../utils/go-cd-utils'
 import { PipelineJobNode } from './pipeline-job.node'
 
 export class PipelineStageNode implements TreeNode {
