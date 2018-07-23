@@ -1,11 +1,9 @@
 import * as vscode from 'vscode'
 import { ConfigurationKeys } from './constants/configuration-keys.const'
-import {
-  Observable,
-  Subject,
-  BehaviorSubject,
-} from 'rxjs'
+import { Observable, Subject, BehaviorSubject } from 'rxjs'
 import { distinctUntilChanged } from 'rxjs/operators'
+
+type FailureDisplayOption = 'none' | 'all' | 'causedByMe'
 
 interface GoCDConfig {
   url: string
@@ -13,6 +11,7 @@ interface GoCDConfig {
   password: string
   pipeline: string
   refreshInterval: number
+  failureDisplay: FailureDisplayOption
 }
 
 export namespace Configuration {
@@ -22,7 +21,8 @@ export namespace Configuration {
     USERNAME,
     PASSWORD,
     PIPELINE,
-    REFRESH_INTERVAL
+    REFRESH_INTERVAL,
+    FAILURE_DISPLAY
   } = ConfigurationKeys
 
   const config$: Subject<GoCDConfig> = new BehaviorSubject<GoCDConfig>(
@@ -39,7 +39,8 @@ export namespace Configuration {
       config.affectsConfiguration(SECTION + '.' + USERNAME) ||
       config.affectsConfiguration(SECTION + '.' + PASSWORD) ||
       config.affectsConfiguration(SECTION + '.' + PIPELINE) ||
-      config.affectsConfiguration(SECTION + '.' + REFRESH_INTERVAL)
+      config.affectsConfiguration(SECTION + '.' + REFRESH_INTERVAL) ||
+      config.affectsConfiguration(SECTION + '.' + FAILURE_DISPLAY)
     ) {
       config$.next(getConfig())
     }
@@ -54,6 +55,7 @@ export namespace Configuration {
       username: vscodeConfig.get(USERNAME) || '',
       password: vscodeConfig.get(PASSWORD) || '',
       pipeline: vscodeConfig.get(PIPELINE) || '',
+      failureDisplay: vscodeConfig.get(FAILURE_DISPLAY) || 'causedByMe',
       refreshInterval: vscodeConfig.get(REFRESH_INTERVAL) || 20000
     }
   }
@@ -89,5 +91,14 @@ export namespace Configuration {
     vscode.workspace
       .getConfiguration(ConfigurationKeys.SECTION)
       .update(ConfigurationKeys.REFRESH_INTERVAL, refreshInterval, global)
+  }
+
+  export function setFailureDisplay(
+    failureDisplayOption: FailureDisplayOption,
+    global: boolean = true
+  ) {
+    vscode.workspace
+      .getConfiguration(ConfigurationKeys.SECTION)
+      .update(ConfigurationKeys.FAILURE_DISPLAY, failureDisplayOption, global)
   }
 }

@@ -1,11 +1,14 @@
-import { Subject, BehaviorSubject } from 'rxjs'
+import { Subject, BehaviorSubject, of } from 'rxjs'
 import { State } from '../state'
-import { map, withLatestFrom, tap, skipWhile } from 'rxjs/operators'
+import { map, withLatestFrom, tap, skipWhile, catchError } from 'rxjs/operators'
 import { PipelineInstance } from '../gocd-api/models/pipeline-instance.model'
 import { Pipeline } from '../gocd-api/models/pipeline.model'
 import { EventEmitter } from 'vscode'
 import { showErrorAlert } from './alerts/show-error-alert'
 import { OK } from './alerts/named-actions'
+import { GoCdApi } from '../gocd-api'
+import { Api } from '../api'
+import { MaterialRevision } from '../gocd-api/models/material-revision.model'
 
 interface WatchedPipeline {
   name: string
@@ -42,7 +45,6 @@ export class GoCdJobWatcher {
     }),
     tap(([pipelines]) => {
       const pipelinesToWatch = this.getPipelinesToWatch(pipelines)
-      console.log('Watching pipelines: ' + pipelinesToWatch)
       this.watchedPipelines$.next(pipelinesToWatch)
     })
   )
@@ -76,13 +78,56 @@ export class GoCdJobWatcher {
       )
     )
   }
+
+  buildDescriptionFromMaterialRevisions(materialRevs: MaterialRevision[]) {
+    materialRevs
+      .filter(rev => rev.material.type.toLowerCase() === 'git')
+      .map(material => {
+        const materialDescription = material.material.description.match(
+          /git@(.+?\.git)/
+        )
+        return (
+          (materialDescription
+            ? materialDescription[0]
+            : material.material.description) +
+          '\n' +
+          material.modifications.map(mod => mod.comment).join('\n')
+        )
+      })
+      .join('\n')
+  }
+
   handlePipelineStatusChange(pipeline: Pipeline, instance?: PipelineInstance) {
     if (instance) {
       const stages = instance._embedded.stages.map(stage => stage.status)
       const didFail = stages.some(stage => stage === 'Failed')
+      console.log(instance)
       if (didFail) {
-        showErrorAlert(null, pipeline.name + ' failed!', OK)
         this._onPipelineFailure.fire({ pipeline, instance })
+        Api.getPipelineHistory(pipeline.name)
+          .pipe(
+            map(paginated => paginated.pipelines),
+            map(history =>
+              history.find(history => history.label === instance.label)
+            ),
+            catchError(() => of(undefined))
+          )
+          .subscribe(history => {
+            if (!history) {
+              showErrorAlert(null, `Pipeline Failed: ${pipeline.name}`, OK)
+            } else {
+              showErrorAlert(
+                null,
+                `Pipeline Failed: ${
+                  pipeline.name
+                } \n ${this.buildDescriptionFromMaterialRevisions(
+                  history.build_cause.material_revisions
+                )}`,
+                OK
+              )
+            }
+          })
+        showErrorAlert(null, pipeline.name, OK)
       }
     } else {
       console.error('Lost instance for pipeline... ' + pipeline)

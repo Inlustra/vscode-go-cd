@@ -18,11 +18,11 @@ export function activate(context: vscode.ExtensionContext) {
   new GoCdTreeView().init()
   new GoCdSelectedPipelineTreeView().init()
   new GoCdJobWatcher().init()
-  State.forceRefresh$.next()
   const { pipeline } = Configuration.getConfig()
   if (pipeline === '') {
     State.pipelines$.pipe(first()).subscribe(() => GuessSelectedPipeline())
   }
+  State.forceRefresh$.next()
 }
 
 export function deactivate() {}

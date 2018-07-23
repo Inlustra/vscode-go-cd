@@ -9,9 +9,7 @@ import {
   withLatestFrom,
   exhaustMap,
   share,
-  filter,
-  catchError,
-  distinctUntilChanged
+  catchError
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './gocd-api'
@@ -81,22 +79,23 @@ export namespace State {
               .map(material => material.description)
               .some(description =>
                 gitUrls.some(url => description.includes(url))
-              )
+              ) 
           )
+      } else {
+        console.error('No Git urls...')
       }
       return []
     }),
     map(pipelines => pipelines.map(pipeline => pipeline.name)),
-    switchMap(names =>
-      pipelines$.pipe(
-        map(pipelines =>
-          pipelines.filter(pipeline =>
-            names.some(name => pipeline.name === name)
-          )
-        )
+    withLatestFrom(pipelines$),
+    map(([names, pipelines]) => {
+      console.log('Running!')
+      console.log(names)
+      console.log(pipelines)
+      return pipelines.filter(pipeline =>
+        names.some(name => pipeline.name === name)
       )
-    ),
-    distinctUntilChanged(),
+    }),
     share()
   )
 

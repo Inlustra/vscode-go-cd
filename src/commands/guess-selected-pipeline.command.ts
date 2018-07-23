@@ -8,10 +8,13 @@ import { OK } from '../gui/alerts/named-actions'
 import showPipelineInput from '../gui/inputs/show-pipeline-input'
 
 export function GuessSelectedPipeline(silent: boolean = true) {
+  console.log('Running guess!!')
   State.openPipelines$
     .pipe(
       first(),
       flatMap(pipelines => {
+        console.log('GOT')
+        console.log(pipelines)
         if (pipelines.length === 0) {
           return of(undefined)
         } else if (pipelines.length === 1) {

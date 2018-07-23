@@ -4,5 +4,6 @@ export enum ConfigurationKeys {
   USERNAME = 'username',
   PASSWORD = 'password',
   PIPELINE = 'pipeline',
-  REFRESH_INTERVAL = 'refreshInterval'
+  REFRESH_INTERVAL = 'refreshInterval',
+  FAILURE_DISPLAY = 'failureDisplay'
 }
