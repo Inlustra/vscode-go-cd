@@ -1,4 +1,4 @@
-import { merge, interval, Subject, of } from 'rxjs'
+import { merge, interval, Subject, of, empty } from 'rxjs'
 import {
   map,
   switchMap,
@@ -46,7 +46,9 @@ export namespace State {
 
   export const dashboardPipelineGroups$ = configuration$.pipe(
     exhaustMap(({ url, username, password }) =>
-      GoCdApi.getDashboardPipelineGroups(url, username, password)
+      GoCdApi.getDashboardPipelineGroups(url, username, password).pipe(
+        catchError(e => empty())
+      )
     ),
     share()
   )
@@ -66,7 +68,9 @@ export namespace State {
 
   export const openPipelines$ = configuration$.pipe(
     exhaustMap(({ url, username, password }) =>
-      GoCdApi.getPipelineGroups(url, username, password)
+      GoCdApi.getPipelineGroups(url, username, password).pipe(
+        catchError(e => [])
+      )
     ),
     withLatestFrom(gitUrls$),
     map(([groups, gitUrls]) => {
@@ -79,7 +83,7 @@ export namespace State {
               .map(material => material.description)
               .some(description =>
                 gitUrls.some(url => description.includes(url))
-              ) 
+              )
           )
       } else {
         console.error('No Git urls...')
@@ -89,9 +93,6 @@ export namespace State {
     map(pipelines => pipelines.map(pipeline => pipeline.name)),
     withLatestFrom(pipelines$),
     map(([names, pipelines]) => {
-      console.log('Running!')
-      console.log(names)
-      console.log(pipelines)
       return pipelines.filter(pipeline =>
         names.some(name => pipeline.name === name)
       )
