@@ -2,7 +2,7 @@
 
 ## **Still in development**
 
-Completely unofficial, This extension allows you to see your Go CD pipelines from within VSCode
+Completely unofficial, This extension allows you to see your [Go CD](https://www.gocd.org/) pipelines from within VSCode
 
 ## Looking for help
 
