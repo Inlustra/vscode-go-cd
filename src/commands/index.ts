@@ -4,6 +4,7 @@ import ForceRefresh from './refresh-pipeline.command'
 import OpenArtifact from './open-artifact.command'
 import { CommandKeys } from '../constants/command-keys.const'
 import { GuessSelectedPipeline } from './guess-selected-pipeline.command';
+import { ManualSelectPipeline } from './manual-select-pipeline.command';
 
 export const Commands = [
   vscode.commands.registerCommand(
@@ -21,5 +22,9 @@ export const Commands = [
   vscode.commands.registerCommand(
     CommandKeys.GUESS_SELECTED_PIPELINE,
     GuessSelectedPipeline
+  ),
+  vscode.commands.registerCommand(
+    CommandKeys.MANUAL_SELECT_PIPELINE,
+    ManualSelectPipeline
   )
 ]

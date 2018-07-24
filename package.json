@@ -4,10 +4,15 @@
   "description": "Provides information about the current status of your Go CD pipelines",
   "version": "0.0.1",
   "publisher": "inlustra",
-  "enableProposedApi": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Inlustra/vscode-go-cd.git"
+  },
   "engines": {
     "vscode": "^1.25.0"
   },
+  "preview": true,
+  "icon": "assets/logo-256.png",
   "categories": [
     "Other"
   ],
@@ -17,6 +22,10 @@
   "extensionDependencies": [
     "vscode.git"
   ],
+  "galleryBanner": {
+    "color": "#95328F",
+    "theme": "dark"
+  },
   "main": "./out/src/extension",
   "contributes": {
     "viewsContainers": {
@@ -43,7 +52,7 @@
     "commands": [
       {
         "command": "gocd.guessSelectedPipeline",
-        "title": "Go CD: Automatically Guess Selected Pipelines"
+        "title": "Go CD: Automatically Guess Selected Pipeline"
       },
       {
         "command": "gocd.openArtifact",
@@ -56,6 +65,10 @@
       {
         "command": "gocd.forceRefresh",
         "title": "Go CD: Force Refresh"
+      },
+      {
+        "command": "gocd.manualSelectPipeline",
+        "title": "Go CD: Manually Select Pipeline"
       }
     ],
     "configuration": {
@@ -84,7 +97,7 @@
         },
         "gocd.refreshInterval": {
           "type": "number",
-          "default": 5000,
+          "default": 20000,
           "description": "The amount of time between refreshing the pipeline info"
         },
         "gocd.failureDisplay": {
@@ -94,7 +107,7 @@
             "all",
             "causedByMe"
           ],
-          "description": "Defines when the gocd build failures should be displayed"
+          "description": "(Currently does nothing) Defines when the gocd build failures should be displayed"
         }
       }
     }
