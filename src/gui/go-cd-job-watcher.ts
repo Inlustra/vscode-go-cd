@@ -127,7 +127,6 @@ export class GoCdJobWatcher {
               )
             }
           })
-        showErrorAlert(null, pipeline.name, OK)
       }
     } else {
       console.error('Lost instance for pipeline... ' + pipeline)
