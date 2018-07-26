@@ -25,4 +25,6 @@ export function activate(context: vscode.ExtensionContext) {
   State.forceRefresh$.next()
 }
 
-export function deactivate() {}
+export function deactivate() {
+  State.stop$.next();
+}

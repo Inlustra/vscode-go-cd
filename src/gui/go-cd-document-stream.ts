@@ -7,7 +7,6 @@ import {
   Position,
   StatusBarAlignment
 } from 'vscode'
-import { State } from '../state'
 import {
   first,
   flatMap,
@@ -26,9 +25,15 @@ import { OK } from './alerts/named-actions'
 import { JobStatus } from '../gocd-api/models/job-status.model'
 import { Api } from '../api';
 
-export class GoCdDocumentStream {
+// TODO Break this class out into GUI components and streaming
+export class GoCdDocumentStream { 
+
   public onComplete$: Subject<void> = new Subject()
   private statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 1)
+
+  public get uri() {
+    return Uri.parse(`untitled:${this.pipelineName}-${this.jobName}-${this.jobId}.log`);
+  }
 
   constructor(
     private pipelineName: string,
@@ -37,7 +42,7 @@ export class GoCdDocumentStream {
     private stageCounter: string,
     private jobName: string,
     private jobId: string,
-    private artifact: string
+    private artifact: string = 'cruise-output/console.log'
   ) {}
 
   start() {
@@ -82,7 +87,7 @@ export class GoCdDocumentStream {
         .toString(36)
         .substring(2, 15)
     return from(
-      workspace.openTextDocument(Uri.parse('untitled:' + randomString + '.log'))
+      workspace.openTextDocument(this.uri)
     ).pipe(
       tap(doc => window.showTextDocument(doc)),
       catchError(e => {
@@ -151,4 +156,5 @@ export class GoCdDocumentStream {
       }
     }
   }
+
 }

@@ -8,7 +8,7 @@ interface OpenArtifactCommandArgs {
   stageCounter: string
   jobName: string
   jobId: string
-  artifact: string
+  artifact?: string
 }
 
 export default function OpenArtifact(args: OpenArtifactCommandArgs) {

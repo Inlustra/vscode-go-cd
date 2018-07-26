@@ -9,7 +9,8 @@ import {
   withLatestFrom,
   exhaustMap,
   share,
-  catchError
+  catchError,
+  takeUntil
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './gocd-api'
@@ -21,7 +22,8 @@ import { GitUtils } from './utils/git-utils'
 import { PipelineGroupPipeline } from './gocd-api/models/pipeline-groups.model'
 
 export namespace State {
-  export let paused: boolean = false
+
+  export const stop$: Subject<void> = new Subject();
 
   export const forceRefresh$ = new Subject<void>()
 
@@ -36,7 +38,7 @@ export namespace State {
         )
       ).pipe(mapTo(config))
     ),
-    skipWhile(() => paused)
+    takeUntil(stop$)
   )
 
   export const gitUrls$ = GitUtils.getGitOrigins().pipe(
@@ -45,9 +47,9 @@ export namespace State {
   )
 
   export const dashboardPipelineGroups$ = configuration$.pipe(
-    exhaustMap(({ url, username, password }) =>
+    switchMap(({ url, username, password }) =>
       GoCdApi.getDashboardPipelineGroups(url, username, password).pipe(
-        catchError(e => empty())
+        catchError(e => empty()) // TODO: Handle this properly
       )
     ),
     share()
@@ -67,9 +69,9 @@ export namespace State {
   )
 
   export const openPipelines$ = configuration$.pipe(
-    exhaustMap(({ url, username, password }) =>
+    switchMap(({ url, username, password }) =>
       GoCdApi.getPipelineGroups(url, username, password).pipe(
-        catchError(e => [])
+        catchError(e => []) // TODO: Handle this properly
       )
     ),
     withLatestFrom(gitUrls$),
