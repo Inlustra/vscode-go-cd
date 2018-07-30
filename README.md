@@ -54,12 +54,8 @@ This extension contributes the following settings:
 - Implement proper error handling
 - Write tests!
 - Work on correcting the host url if it's slightly off
-  - Automatically add a `/` if needed
   - Automatically add `/go/` if needed
 - When a pipeline fails, add a button to automatically get the logs
-- Add a real logger (console.log is silly)
-  - Tidy up console logs
-  - Add a debug mode?
 - Change the log streamer to a webview? (Can't currently see terminal colors)
 - Implement proper telemetry: vscode-extension-telemetry
 
