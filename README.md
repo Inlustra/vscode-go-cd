@@ -9,6 +9,10 @@ Completely unofficial, This extension allows you to see your [Go CD](https://www
 Anyone wishing to contribute should get in touch! 
 I currently only have my work Go CD environment to work from, so anyone with an environment where I can test authentication, pipeline failing, etc, would be really great!
 
+## Getting Started
+
+Simply run the command: `Go CD: Set Global Config` and fill in the information required!
+
 ## Features
 
 - A small statusbar item can be added at the bottom of the view displaying the latest build status
