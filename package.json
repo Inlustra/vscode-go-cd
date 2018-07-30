@@ -133,18 +133,18 @@
   },
   "devDependencies": {
     "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.40",
+    "@types/node": "^6.0.114",
     "@types/request-promise-native": "^1.0.15",
     "mocha": "^2.3.3",
-    "tslint": "^5.8.0",
+    "rxjs-tslint": "^0.1.5",
+    "tslint": "^5.11.0",
     "typescript": "^2.9.2",
-    "vscode": "^1.1.6",
-    "rxjs-tslint": "^0.1.4"
+    "vscode": "^1.1.18"
   },
   "dependencies": {
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
-    "rxjs": "^6.2.0",
+    "rxjs": "^6.2.2",
     "winston": "^3.0.0",
     "winston-transport": "^4.2.0"
   }
