@@ -10,6 +10,7 @@ import * as requestPromise from 'request-promise-native'
 import { JobStatus } from './models/job-status.model'
 import { PipelineGroup } from './models/pipeline-groups.model'
 import { Logger } from '../logger'
+import { RxUtils } from '../utils/rx-utils'
 
 export namespace GoCdApi {
   function performFetch(
@@ -43,7 +44,10 @@ export namespace GoCdApi {
             }) ||
           undefined
       })
-    ).pipe(observeOn(asapScheduler))
+    ).pipe(
+      RxUtils.log(Logger, 'silly'),
+      observeOn(asapScheduler)
+    )
   }
 
   export function getHealth(host: string): Observable<{ health: string }> {
