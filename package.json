@@ -2,7 +2,7 @@
   "name": "vscode-go-cd",
   "displayName": "Go CD Pipeline",
   "description": "Provides information about the current status of your Go CD pipelines",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "inlustra",
   "repository": {
     "type": "git",
