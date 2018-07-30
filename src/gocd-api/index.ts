@@ -25,9 +25,9 @@ export namespace GoCdApi {
     const headers: any = includeHeaders
       ? { Accept: 'application/vnd.go.cd.v1+json' }
       : {}
-    Logger.debug(`[${method}] ${url}`)
-      .verbose(`Authentication: ${username && password}`)
-      .verbose(`Headers: ${JSON.stringify(headers)}`)
+    Logger.verbose(`[${method}] ${url}`)
+      .debug(`Authentication: ${username && password}`)
+      .debug(`Headers: ${JSON.stringify(headers)}`)
     return from(
       requestPromise(url, {
         method,
