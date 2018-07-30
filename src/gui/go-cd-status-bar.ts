@@ -13,10 +13,7 @@ export class GoCdStatusBar {
   constructor() {}
 
   init() {
-    State.selectedPipeline$.subscribe(
-      pipeline => this.resetStatus(pipeline),
-      err => console.error(err)
-    )
+    State.selectedPipeline$.subscribe(pipeline => this.resetStatus(pipeline))
   }
 
   getIconStringFromPipeline(instance: PipelineInstance) {

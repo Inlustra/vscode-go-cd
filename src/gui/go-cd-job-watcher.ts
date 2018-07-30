@@ -9,6 +9,7 @@ import { OK } from './alerts/named-actions'
 import { GoCdApi } from '../gocd-api'
 import { Api } from '../api'
 import { MaterialRevision } from '../gocd-api/models/material-revision.model'
+import { Logger } from '../logger';
 
 interface WatchedPipeline {
   name: string
@@ -101,7 +102,6 @@ export class GoCdJobWatcher {
     if (instance) {
       const stages = instance._embedded.stages.map(stage => stage.status)
       const didFail = stages.some(stage => stage === 'Failed')
-      console.log(instance)
       if (didFail) {
         this._onPipelineFailure.fire({ pipeline, instance })
         Api.getPipelineHistory(pipeline.name)
@@ -129,7 +129,7 @@ export class GoCdJobWatcher {
           })
       }
     } else {
-      console.error('Lost instance for pipeline... ' + pipeline)
+      Logger.error('[GoCdJobWatcher] Lost instance for pipeline')
     }
   }
 }

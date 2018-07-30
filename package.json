@@ -100,6 +100,19 @@
           "default": 20000,
           "description": "The amount of time between refreshing the pipeline info"
         },
+        "gocd.logLevel": {
+          "type": "string",
+          "default": "info",
+          "enum": [
+            "silly",
+            "debug",
+            "verbose",
+            "info",
+            "warn",
+            "error"
+          ],
+          "description": "The priority level of logs that are added to the GoCD output channel in VSCode"
+        },
         "gocd.failureDisplay": {
           "type": "string",
           "enum": [
@@ -131,6 +144,8 @@
   "dependencies": {
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
-    "rxjs": "^6.2.0"
+    "rxjs": "^6.2.0",
+    "winston": "^3.0.0",
+    "winston-transport": "^4.2.0"
   }
 }

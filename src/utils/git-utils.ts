@@ -15,6 +15,7 @@ import {
 } from 'rxjs/operators'
 import { execSync } from 'child_process'
 import { RxUtils } from './rx-utils'
+import { Logger } from '../logger';
 
 export namespace GitUtils {
   export function getGitPath(): Observable<string> {
@@ -51,7 +52,7 @@ export namespace GitUtils {
               }/.git config --get remote.origin.url`
             )
           } catch (e) {
-            console.log('error executing...', e)
+            Logger.log('[GitUtils] getGitOrigins, error executing...', e)
             return null
           }
         })

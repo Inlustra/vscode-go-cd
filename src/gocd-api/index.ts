@@ -9,6 +9,7 @@ import { map, observeOn } from 'rxjs/operators'
 import * as requestPromise from 'request-promise-native'
 import { JobStatus } from './models/job-status.model'
 import { PipelineGroup } from './models/pipeline-groups.model'
+import { Logger } from '../logger'
 
 export namespace GoCdApi {
   function performFetch(
@@ -23,18 +24,24 @@ export namespace GoCdApi {
     const headers: any = includeHeaders
       ? { Accept: 'application/vnd.go.cd.v1+json' }
       : {}
-    console.log()
-    console.log(url)
-    console.log(method)
-    console.log(body)
-    console.log(username)
-    console.log(password)
-    console.log()
+    Logger.verbose(`Performing request`)
+      .verbose(`Authentication: ${username && password}`)
+      .verbose(`[${method}] ${url}`)
+      .verbose(`Headers:`)
+      .verbose(headers)
     return from(
       requestPromise(url, {
         method,
         headers,
-        json
+        json,
+        body,
+        auth:
+          (username &&
+            password && {
+              username,
+              password
+            }) ||
+          undefined
       })
     ).pipe(observeOn(asapScheduler))
   }

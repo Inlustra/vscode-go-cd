@@ -5,5 +5,6 @@ export enum ConfigurationKeys {
   PASSWORD = 'password',
   PIPELINE = 'pipeline',
   REFRESH_INTERVAL = 'refreshInterval',
-  FAILURE_DISPLAY = 'failureDisplay'
+  FAILURE_DISPLAY = 'failureDisplay',
+  LOG_LEVEL = 'logLevel'
 }

@@ -12,6 +12,7 @@ import { distinctUntilChanged } from 'rxjs/operators'
 import { Subscription } from 'rxjs'
 import { TreeNode } from './tree/tree-node'
 import { PipelineGroupNode } from './tree/pipeline-group.node'
+import { Logger } from '../logger'
 
 export class GoCdTreeView implements TreeDataProvider<TreeNode> {
   onChangeSubscription: Subscription | null = null
@@ -36,7 +37,7 @@ export class GoCdTreeView implements TreeDataProvider<TreeNode> {
     try {
       return element.toTreeItem()
     } catch (e) {
-      console.error(e)
+      Logger.error('[GoCdTreeView] Unable to call getTreeItem for element', e)
     }
     return new TreeItem('Loading...')
   }

@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs'
 import { TreeNode } from './tree/tree-node'
 import { Pipeline } from '../gocd-api/models/pipeline.model'
 import { PipelineNode } from './tree/pipeline.node'
+import { Logger } from '../logger';
 
 export class GoCdSelectedPipelineTreeView implements TreeDataProvider<TreeNode> {
   onChangeSubscription?: Subscription
@@ -44,7 +45,7 @@ export class GoCdSelectedPipelineTreeView implements TreeDataProvider<TreeNode> 
     try {
       return element.toTreeItem()
     } catch (e) {
-      console.error(e)
+      Logger.error('[GoCdSelectedPipelineTreeView] Unable to call getTreeItem for element', e)
     }
     return new TreeItem('Loading...')
   }

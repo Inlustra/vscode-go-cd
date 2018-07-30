@@ -20,6 +20,7 @@ import {
 } from './gocd-api/models/pipeline-history.model'
 import { GitUtils } from './utils/git-utils'
 import { PipelineGroupPipeline } from './gocd-api/models/pipeline-groups.model'
+import { Logger } from './logger';
 
 export namespace State {
 
@@ -32,9 +33,9 @@ export namespace State {
     switchMap(config =>
       merge(
         of(null),
-        forceRefresh$.pipe(tap(() => console.log('Forced Refresh'))),
+        forceRefresh$.pipe(tap(() => Logger.debug('[State] Force Refresh'))),
         interval(Math.max(config.refreshInterval, 5000)).pipe(
-          tap(() => console.log('Regular Refresh'))
+          tap(() => Logger.debug('[State] Interval Refresh'))
         )
       ).pipe(mapTo(config))
     ),
@@ -88,7 +89,7 @@ export namespace State {
               )
           )
       } else {
-        console.error('No Git urls...')
+        Logger.info(`[State] openPipelines, couldn't find any git repositories`)
       }
       return []
     }),

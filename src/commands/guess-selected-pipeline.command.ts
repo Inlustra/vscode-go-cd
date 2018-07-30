@@ -6,6 +6,7 @@ import { Configuration } from '../configuration'
 import { showErrorAlert } from '../gui/alerts/show-error-alert'
 import { OK } from '../gui/alerts/named-actions'
 import showPipelineInput from '../gui/inputs/show-pipeline-input'
+import { Logger } from '../logger';
 
 export function GuessSelectedPipeline(silent: boolean = true) {
   State.openPipelines$
