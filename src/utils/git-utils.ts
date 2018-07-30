@@ -1,15 +1,9 @@
 import { Uri, extensions } from 'vscode'
 import { from, throwError, Observable, forkJoin } from 'rxjs'
-import {
-  map,
-  filter,
-  flatMap,
-  toArray,
-  first,
-} from 'rxjs/operators'
+import { map, filter, flatMap, toArray, first } from 'rxjs/operators'
 import { execSync } from 'child_process'
 import { RxUtils } from './rx-utils'
-import { Logger } from '../logger';
+import { Logger } from '../logger'
 
 export namespace GitUtils {
   export function getGitPath(): Observable<string> {
