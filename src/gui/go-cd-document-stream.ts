@@ -79,13 +79,6 @@ export class GoCdDocumentStream {
   }
 
   private openDocument(): Observable<TextDocument | null> {
-    const randomString =
-      Math.random()
-        .toString(36)
-        .substring(2, 15) +
-      Math.random()
-        .toString(36)
-        .substring(2, 15)
     return from(
       workspace.openTextDocument(this.uri)
     ).pipe(

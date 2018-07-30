@@ -1,12 +1,11 @@
 import { Subject, BehaviorSubject, of } from 'rxjs'
 import { State } from '../state'
-import { map, withLatestFrom, tap, skipWhile, catchError } from 'rxjs/operators'
+import { map, withLatestFrom, tap, catchError } from 'rxjs/operators'
 import { PipelineInstance } from '../gocd-api/models/pipeline-instance.model'
 import { Pipeline } from '../gocd-api/models/pipeline.model'
 import { EventEmitter } from 'vscode'
 import { showErrorAlert } from './alerts/show-error-alert'
 import { OK } from './alerts/named-actions'
-import { GoCdApi } from '../gocd-api'
 import { Api } from '../api'
 import { MaterialRevision } from '../gocd-api/models/material-revision.model'
 import { Logger } from '../logger';

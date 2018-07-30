@@ -1,8 +1,7 @@
-import * as vscode from 'vscode'
-import { State } from '../state'
-import { map, filter } from 'rxjs/operators'
-import { Pipeline } from '../gocd-api/models/pipeline.model'
-import { PipelineInstance } from '../gocd-api/models/pipeline-instance.model'
+import * as vscode from 'vscode';
+import { PipelineInstance } from '../gocd-api/models/pipeline-instance.model';
+import { Pipeline } from '../gocd-api/models/pipeline.model';
+import { State } from '../state';
 
 export class GoCdStatusBar {
   statusBar = vscode.window.createStatusBarItem(

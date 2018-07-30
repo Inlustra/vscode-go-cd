@@ -1,4 +1,3 @@
-import { window } from 'vscode'
 import { GoCdDocumentStream } from '../gui/go-cd-document-stream'
 
 interface OpenArtifactCommandArgs {

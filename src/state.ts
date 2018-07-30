@@ -1,30 +1,23 @@
-import { merge, interval, Subject, of, empty } from 'rxjs'
+import { empty, interval, merge, of, Subject } from 'rxjs'
 import {
-  map,
-  switchMap,
-  mapTo,
-  skipWhile,
-  publishReplay,
-  tap,
-  withLatestFrom,
-  exhaustMap,
-  share,
   catchError,
-  takeUntil
+  map,
+  mapTo,
+  share,
+  skipWhile,
+  switchMap,
+  takeUntil,
+  tap,
+  withLatestFrom
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './gocd-api'
-import {
-  PipelineHistory,
-  PaginatedPipelineHistory
-} from './gocd-api/models/pipeline-history.model'
-import { GitUtils } from './utils/git-utils'
 import { PipelineGroupPipeline } from './gocd-api/models/pipeline-groups.model'
-import { Logger } from './logger';
+import { Logger } from './logger'
+import { GitUtils } from './utils/git-utils'
 
 export namespace State {
-
-  export const stop$: Subject<void> = new Subject();
+  export const stop$: Subject<void> = new Subject()
 
   export const forceRefresh$ = new Subject<void>()
 

@@ -1,5 +1,4 @@
 import { Configuration } from '../../configuration'
-import { ConfigurationKeys } from '../../constants/configuration-keys.const'
 import * as vscode from 'vscode'
 
 export default function showPasswordInput(global: boolean = true) {

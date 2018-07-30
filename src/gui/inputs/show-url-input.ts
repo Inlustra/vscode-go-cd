@@ -1,5 +1,4 @@
 import { Configuration } from '../../configuration'
-import { ConfigurationKeys } from '../../constants/configuration-keys.const'
 import { Validations } from '../../constants/validations.const'
 import * as vscode from 'vscode'
 import { GoCdApi } from '../../gocd-api';

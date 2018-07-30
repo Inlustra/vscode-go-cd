@@ -5,7 +5,8 @@ import {
   Event,
   TreeItem,
   ProviderResult,
-  TreeView
+  TreeView,
+  Disposable
 } from 'vscode'
 import { State } from '../state'
 import { distinctUntilChanged } from 'rxjs/operators'
@@ -13,9 +14,10 @@ import { Subscription } from 'rxjs'
 import { TreeNode } from './tree/tree-node'
 import { Pipeline } from '../gocd-api/models/pipeline.model'
 import { PipelineNode } from './tree/pipeline.node'
-import { Logger } from '../logger';
+import { Logger } from '../logger'
 
-export class GoCdSelectedPipelineTreeView implements TreeDataProvider<TreeNode> {
+export class GoCdSelectedPipelineTreeView
+  implements TreeDataProvider<TreeNode>, Disposable {
   onChangeSubscription?: Subscription
   pipeline?: Pipeline
   private treeView: TreeView<TreeNode>
@@ -24,6 +26,10 @@ export class GoCdSelectedPipelineTreeView implements TreeDataProvider<TreeNode> 
     this.treeView = window.createTreeView('go-cd-selected-pipeline', {
       treeDataProvider: this
     })
+  }
+
+  dispose() {
+    this.treeView.dispose()
   }
 
   init() {
@@ -45,7 +51,10 @@ export class GoCdSelectedPipelineTreeView implements TreeDataProvider<TreeNode> 
     try {
       return element.toTreeItem()
     } catch (e) {
-      Logger.error('[GoCdSelectedPipelineTreeView] Unable to call getTreeItem for element', e)
+      Logger.error(
+        '[GoCdSelectedPipelineTreeView] Unable to call getTreeItem for element',
+        e
+      )
     }
     return new TreeItem('Loading...')
   }

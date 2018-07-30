@@ -9,7 +9,9 @@
         ],
         "sourceMap": true,
         "rootDir": ".",
-        "strict": true
+        "strict": true,
+        "noUnusedLocals": true,
+        "forceConsistentCasingInFileNames": true
     },
     "exclude": [
         "node_modules",

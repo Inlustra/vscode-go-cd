@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs'
 import { retryWhen, delay, take, tap } from 'rxjs/operators'
-import { Logger } from '../logger'
 import * as winston from 'winston'
 
 export namespace RxUtils {
