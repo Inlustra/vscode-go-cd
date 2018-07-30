@@ -8,7 +8,8 @@ import {
   switchMap,
   takeUntil,
   tap,
-  withLatestFrom
+  withLatestFrom,
+  pairwise
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './gocd-api'
@@ -105,6 +106,27 @@ export namespace State {
           : undefined
     ),
     share()
+  )
+
+  export const buildingPipelines$ = pipelines$.pipe(
+    map(pipelines =>
+      pipelines.filter(pipeline =>
+        pipeline._embedded.instances.find(instance =>
+          instance._embedded.stages.some(stage => stage.status === 'Building')
+        )
+      )
+    )
+  )
+
+  export const failedPipelines$ = buildingPipelines$.pipe(
+    pairwise(),
+    map(([previousPipelines, currentPipelines]) =>
+      previousPipelines.filter(previousPipeline =>
+        currentPipelines.some(
+          currentPipeline => previousPipeline.name !== currentPipeline.name
+        )
+      )
+    )
   )
 
   export function getPipeline$(name: string) {
