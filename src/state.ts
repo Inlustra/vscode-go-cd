@@ -1,4 +1,4 @@
-import { empty, interval, merge, of, Subject } from 'rxjs'
+import { empty, interval, merge, of, Subject, forkJoin, from } from 'rxjs'
 import {
   catchError,
   map,
@@ -9,13 +9,24 @@ import {
   takeUntil,
   tap,
   withLatestFrom,
-  pairwise
+  pairwise,
+  flatMap,
+  filter,
+  concat,
+  concatMap,
+  toArray,
+  scan,
+  reduce
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
 import { GoCdApi } from './gocd-api'
 import { PipelineGroupPipeline } from './gocd-api/models/pipeline-groups.model'
 import { Logger } from './logger'
 import { GitUtils } from './utils/git-utils'
+import { Api } from './api'
+import { PipelineHistory } from './gocd-api/models/pipeline-history.model'
+import { PipelineInstance } from './gocd-api/models/pipeline-instance.model'
+import { Pipeline } from './gocd-api/models/pipeline.model'
 
 export namespace State {
   export const stop$: Subject<void> = new Subject()
@@ -108,25 +119,38 @@ export namespace State {
     share()
   )
 
-  export const buildingPipelines$ = pipelines$.pipe(
-    map(pipelines =>
-      pipelines.filter(pipeline =>
-        pipeline._embedded.instances.find(instance =>
-          instance._embedded.stages.some(stage => stage.status === 'Building')
-        )
+  type PipelineAndInstance = { pipeline: Pipeline; instance: PipelineInstance }
+
+  export const buildingPipelineInstances$ = pipelines$.pipe(
+    switchMap(pipelines =>
+      from(pipelines).pipe(
+        reduce((acc: PipelineAndInstance[], pipeline: Pipeline) => {
+          const instance = pipeline._embedded.instances.find(instance =>
+            instance._embedded.stages.some(stage => stage.status === 'Building')
+          )
+          return instance ? [...acc, { pipeline, instance }] : acc
+        }, []),
       )
     )
   )
 
-  export const failedPipelines$ = buildingPipelines$.pipe(
+  export const failedPipelines$ = buildingPipelineInstances$.pipe(
     pairwise(),
     map(([previousPipelines, currentPipelines]) =>
-      previousPipelines.filter(previousPipeline =>
-        currentPipelines.some(
-          currentPipeline => previousPipeline.name !== currentPipeline.name
-        )
+      previousPipelines.filter(
+        previousPipeline =>
+          !currentPipelines.some(
+            currentPipeline =>
+              previousPipeline.pipeline.name === currentPipeline.pipeline.name
+          )
       )
-    )
+    ),
+    map(pipelines =>
+      pipelines
+        .map(pipeline => pipeline.pipelines.pop())
+        .filter((pipeline): pipeline is PipelineHistory => !!pipeline)
+    ),
+    map(pipelines => pipelines.filter(pipeline => pipeline))
   )
 
   export function getPipeline$(name: string) {
