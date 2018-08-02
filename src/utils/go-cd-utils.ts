@@ -65,6 +65,7 @@ export function getStatusFromPipelineInstance(instance: PipelineInstance) {
   return (instance._embedded.stages
     .map(stage => stage.status)
     .filter(x => !!x)
+    .filter(x => x !== 'Unknown')
     .pop() || 'Unknown') as GoCdPipelineStatus
 }
 
@@ -72,6 +73,7 @@ export function getStatusFromHistory(history: PipelineHistory) {
   return (history.stages
     .map(getStatusFromStage)
     .filter(x => !!x)
+    .filter(x => x !== 'Scheduled')
     .pop() || 'Unknown') as GoCdPipelineStatus
 }
 
