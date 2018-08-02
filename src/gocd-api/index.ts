@@ -174,4 +174,12 @@ export namespace GoCdApi {
       true
     )
   }
+
+  export function followLink<T>(
+    link: string,
+    username?: string,
+    password?: string
+  ): Observable<T> {
+    return performFetch(link, 'GET', undefined, username, password, true, true)
+  }
 }

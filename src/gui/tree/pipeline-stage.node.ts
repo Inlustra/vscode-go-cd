@@ -3,15 +3,19 @@ import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { PipelineHistory } from '../../gocd-api/models/pipeline-history.model'
 import { Stage } from '../../gocd-api/models/stage-history.model'
 import { Pipeline } from '../../gocd-api/models/pipeline.model'
-import { getIconFromStage } from '../../utils/go-cd-utils'
 import { PipelineJobNode } from './pipeline-job.node'
+import { getStatusFromStage, GoCdPipelineStatus, getIconFromStatus } from '../../utils/go-cd-utils'
 
 export class PipelineStageNode implements TreeNode {
+  status: GoCdPipelineStatus
+
   constructor(
     public pipeline: Pipeline,
     public history: PipelineHistory,
     public stage: Stage
-  ) {}
+  ) {
+    this.status = getStatusFromStage(stage)
+  }
 
   toTreeItem(): TreeItem {
     const treeItem = new TreeItem(
@@ -20,7 +24,7 @@ export class PipelineStageNode implements TreeNode {
         ? TreeItemCollapsibleState.Collapsed
         : TreeItemCollapsibleState.None
     )
-    treeItem.iconPath = getIconFromStage(this.stage)
+    treeItem.iconPath = getIconFromStatus(this.status)
     return treeItem
   }
 

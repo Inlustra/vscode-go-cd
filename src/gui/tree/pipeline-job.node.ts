@@ -4,20 +4,28 @@ import { PipelineHistory } from '../../gocd-api/models/pipeline-history.model'
 import { Stage } from '../../gocd-api/models/stage-history.model'
 import { TreeItem } from 'vscode'
 import { Job } from '../../gocd-api/models/job.model'
-import { getIconFromJob } from '../../utils/go-cd-utils'
 import { CommandKeys } from '../../constants/command-keys.const'
+import {
+  GoCdPipelineStatus,
+  getStatusFromJob,
+  getIconFromStatus
+} from '../../utils/go-cd-utils'
 
 export class PipelineJobNode implements TreeNode {
+  status: GoCdPipelineStatus
+
   constructor(
     public pipeline: Pipeline,
     public history: PipelineHistory,
     public stage: Stage,
     public job: Job
-  ) {}
+  ) {
+    this.status = getStatusFromJob(job)
+  }
 
   toTreeItem(): TreeItem {
     const treeItem = new TreeItem(this.job.name)
-    treeItem.iconPath = getIconFromJob(this.job)
+    treeItem.iconPath = getIconFromStatus(this.status)
     treeItem.command = {
       title: 'Go CD: Open Artifact',
       command: CommandKeys.OPEN_ARTIFACT_COMMAND,

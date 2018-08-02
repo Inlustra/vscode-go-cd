@@ -27,6 +27,7 @@ import { Api } from './api'
 import { PipelineHistory } from './gocd-api/models/pipeline-history.model'
 import { PipelineInstance } from './gocd-api/models/pipeline-instance.model'
 import { Pipeline } from './gocd-api/models/pipeline.model'
+import { getStatusFromHistory } from './utils/go-cd-utils'
 
 export namespace State {
   export const stop$: Subject<void> = new Subject()
@@ -129,7 +130,7 @@ export namespace State {
             instance._embedded.stages.some(stage => stage.status === 'Building')
           )
           return instance ? [...acc, { pipeline, instance }] : acc
-        }, []),
+        }, [])
       )
     )
   )
@@ -146,11 +147,20 @@ export namespace State {
       )
     ),
     map(pipelines =>
-      pipelines
-        .map(pipeline => pipeline.pipelines.pop())
-        .filter((pipeline): pipeline is PipelineHistory => !!pipeline)
+      pipelines.map(({ instance }) =>
+        Api.followLink<PipelineHistory>(instance._links.self.href).pipe(
+          catchError(x => of(undefined))
+        )
+      )
     ),
-    map(pipelines => pipelines.filter(pipeline => pipeline))
+    switchMap(histories$ => forkJoin(histories$)),
+    switchMap(histories =>
+      from(histories).pipe(
+        filter((history): history is PipelineHistory => !!history),
+        filter(history => getStatusFromHistory(history) === 'Failed'),
+        toArray()
+      )
+    )
   )
 
   export function getPipeline$(name: string) {

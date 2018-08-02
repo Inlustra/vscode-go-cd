@@ -23,15 +23,14 @@ export class GoCdJobWatcher {
   constructor() {}
 
   init() {
-    State.buildingPipelines$.subscribe(diff => {
+    State.buildingPipelineInstances$.subscribe(diff => {
       window.showInformationMessage(
-        'Building: ' + diff.map(m => m.name).join(',')
+        'Building: ' +
+          diff.map(m => `[${m.instance.label}] ` + m.pipeline.name).join(',')
       )
     })
     this.runner$.subscribe(diff => {
-      window.showInformationMessage(
-        'Diff: ' + diff.map(m => m.name).join(',')
-      )
+      window.showInformationMessage('Diff: ' + diff.map(m => m.name).join(','))
     })
   }
 

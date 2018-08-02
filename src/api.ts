@@ -3,15 +3,10 @@ import { switchMap, exhaustMap, flatMap } from 'rxjs/operators'
 import { GoCdApi } from './gocd-api'
 
 export namespace Api {
-
   export function getPipelineGroups() {
     return Configuration.all$.pipe(
       switchMap(config =>
-        GoCdApi.getPipelineGroups(
-          config.url,
-          config.username,
-          config.password
-        )
+        GoCdApi.getPipelineGroups(config.url, config.username, config.password)
       )
     )
   }
@@ -96,6 +91,14 @@ export namespace Api {
           config.username,
           config.password
         )
+      })
+    )
+  }
+
+  export function followLink<T>(link: string) {
+    return Configuration.all$.pipe(
+      flatMap(config => {
+        return GoCdApi.followLink<T>(link, config.username, config.password)
       })
     )
   }

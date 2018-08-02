@@ -3,8 +3,9 @@ import { Pipeline } from '../../gocd-api/models/pipeline.model'
 import { TreeItem, TreeItemCollapsibleState } from 'vscode'
 import { Icons } from '../icons'
 import {
-  getIconFromPipelineInstance,
-  getLatestPipelineInstance
+  getLatestPipelineInstance,
+  getStatusFromPipelineInstance,
+  getIconFromStatus
 } from '../../utils/go-cd-utils'
 import { first } from 'rxjs/operators'
 import { showErrorAlert } from '../alerts/show-error-alert'
@@ -23,7 +24,8 @@ export class PipelineNode implements TreeNode {
     )
     const instance = getLatestPipelineInstance(this.pipeline)
     if (instance) {
-      treeItem.iconPath = getIconFromPipelineInstance(instance)
+      const status = getStatusFromPipelineInstance(instance)
+      treeItem.iconPath = getIconFromStatus(status)
       treeItem.label += ` - ${instance && instance.label}`
     }
     if (this.pipeline.pause_info.paused) {

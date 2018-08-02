@@ -1,84 +1,78 @@
 import { Icons } from '../gui/icons'
 import { Stage } from '../gocd-api/models/stage-history.model'
-import { Result } from '../gocd-api/models/result.model'
-import { Job, JobState } from '../gocd-api/models/job.model'
+import { Job } from '../gocd-api/models/job.model'
 import { PipelineHistory } from '../gocd-api/models/pipeline-history.model'
 import { PipelineInstance } from '../gocd-api/models/pipeline-instance.model'
 import { Pipeline } from '../gocd-api/models/pipeline.model'
 
-export function getIconFromResult(result: Result) {
-  switch (result) {
-    case 'Failed':
-      return Icons.issueOpened
+export type GoCdPipelineStatus =
+  | 'Passed'
+  | 'Failed'
+  | 'Cancelled'
+  | 'Building'
+  | 'Failing'
+  | 'Unknown'
+  | 'Scheduled'
+
+export function getIconFromStatus(status: GoCdPipelineStatus) {
+  switch (status) {
     case 'Passed':
       return Icons.check
-    case 'Cancelled':
-      return Icons.circleSlash
-    case 'Unknown':
-    default:
-      return undefined
-  }
-}
-
-export function getIconFromJobState(state: JobState) {
-  switch (state) {
     case 'Building':
       return Icons.sync
+    case 'Failing':
+      return Icons.issueReopened
+    case 'Failed':
+      return Icons.issueOpened
+    case 'Cancelled':
+      return Icons.circleSlash
     case 'Scheduled':
       return Icons.clock
   }
 }
 
-export function getIconFromJob(job: Job) {
-  return getIconFromResult(job.result) || getIconFromJobState(job.state)
-}
-
-export function getIconFromStage(stage: Stage) {
+export function getStatusFromStage(stage: Stage): GoCdPipelineStatus {
   switch (stage.result) {
     case 'Failed':
-      return Icons.issueOpened
     case 'Passed':
-      return Icons.check
     case 'Cancelled':
-      return Icons.circleSlash
-    case 'Unknown':
+      return stage.result
+    default:
       const x = stage.jobs.map(
         job => (job.result === 'Unknown' ? job.state : job.result)
       )
-      if (
+      if (x.every(state => state === 'Scheduled')) {
+        return 'Scheduled'
+      } else if (
         x.every(
           state =>
-            state === 'Building' || state === 'Scheduled' || state === 'Passed'
+            state === 'Building' || state === 'Passed' || state === 'Scheduled'
         )
       ) {
-        return Icons.sync
+        return 'Building'
       } else if (x.some(state => state === 'Failed')) {
-        return Icons.issueReopened
+        return 'Failing'
       }
+      return 'Unknown'
   }
 }
 
-export function getIconFromPipelineInstance(instance: PipelineInstance) {
-  return instance._embedded.stages
-    .map(stage => stage.status)
-    .map((status, idx, arr) => {
-      switch (status) {
-        case 'Failed':
-          return Icons.issueOpened
-        case 'Passed':
-          return Icons.check
-        case 'Building':
-          return Icons.sync
-        case 'Cancelled':
-          return Icons.circleSlash
-      }
-    })
-    .filter(x => !!x)
-    .pop()
+export function getStatusFromJob(job: Job): GoCdPipelineStatus {
+  return job.state === 'Completed' ? job.result : job.state
 }
 
-export function getIconFromHistory(history: PipelineHistory) {
-  return history.stages.map(getIconFromStage).pop()
+export function getStatusFromPipelineInstance(instance: PipelineInstance) {
+  return (instance._embedded.stages
+    .map(stage => stage.status)
+    .filter(x => !!x)
+    .pop() || 'Unknown') as GoCdPipelineStatus
+}
+
+export function getStatusFromHistory(history: PipelineHistory) {
+  return (history.stages
+    .map(getStatusFromStage)
+    .filter(x => !!x)
+    .pop() || 'Unknown') as GoCdPipelineStatus
 }
 
 export function getLatestPipelineInstance(pipeline: Pipeline) {
