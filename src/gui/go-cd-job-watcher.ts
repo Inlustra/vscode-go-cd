@@ -1,36 +1,15 @@
-import { of } from 'rxjs'
 import { State } from '../state'
-import { map, catchError } from 'rxjs/operators'
-import { PipelineInstance } from '../gocd-api/models/pipeline-instance.model'
-import { Pipeline } from '../gocd-api/models/pipeline.model'
-import { EventEmitter } from 'vscode'
-import { showErrorAlert } from './alerts/show-error-alert'
-import { OK } from './alerts/named-actions'
-import { Api } from '../api'
 import { MaterialRevision } from '../gocd-api/models/material-revision.model'
-import { Logger } from '../logger'
 import { window } from 'vscode'
+import { Logger } from '../logger'
 
 export class GoCdJobWatcher {
-  _onPipelineFailure = new EventEmitter<{
-    pipeline: Pipeline
-    instance: PipelineInstance
-  }>()
-  readonly onPipelineFailure = this._onPipelineFailure.event
-
-  runner$ = State.failedPipelines$
-
   constructor() {}
 
   init() {
-    State.buildingPipelineInstances$.subscribe(diff => {
-      window.showInformationMessage(
-        'Building: ' +
-          diff.map(m => `[${m.instance.label}] ` + m.pipeline.name).join(',')
-      )
-    })
-    this.runner$.subscribe(diff => {
-      window.showInformationMessage('Diff: ' + diff.map(m => m.name).join(','))
+    State.pipelineFailed$.subscribe(pipeline => {
+      Logger.warn('Pipeline Failed: ' + pipeline.name)
+      window.showErrorMessage('Pipeline Failed: ' + pipeline.name)
     })
   }
 
@@ -50,40 +29,5 @@ export class GoCdJobWatcher {
         )
       })
       .join('\n')
-  }
-
-  handlePipelineStatusChange(pipeline: Pipeline, instance?: PipelineInstance) {
-    if (instance) {
-      const stages = instance._embedded.stages.map(stage => stage.status)
-      const didFail = stages.some(stage => stage === 'Failed')
-      if (didFail) {
-        this._onPipelineFailure.fire({ pipeline, instance })
-        Api.getPipelineHistory(pipeline.name)
-          .pipe(
-            map(paginated => paginated.pipelines),
-            map(history =>
-              history.find(history => history.label === instance.label)
-            ),
-            catchError(() => of(undefined))
-          )
-          .subscribe(history => {
-            if (!history) {
-              showErrorAlert(null, `Pipeline Failed: ${pipeline.name}`, OK)
-            } else {
-              showErrorAlert(
-                null,
-                `Pipeline Failed: ${
-                  pipeline.name
-                } \n ${this.buildDescriptionFromMaterialRevisions(
-                  history.build_cause.material_revisions
-                )}`,
-                OK
-              )
-            }
-          })
-      }
-    } else {
-      Logger.error('[GoCdJobWatcher] Lost instance for pipeline')
-    }
   }
 }

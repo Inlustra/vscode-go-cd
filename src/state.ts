@@ -10,12 +10,7 @@ import {
   tap,
   withLatestFrom,
   pairwise,
-  flatMap,
   filter,
-  concat,
-  concatMap,
-  toArray,
-  scan,
   reduce
 } from 'rxjs/operators'
 import { Configuration } from './configuration'
@@ -27,7 +22,10 @@ import { Api } from './api'
 import { PipelineHistory } from './gocd-api/models/pipeline-history.model'
 import { PipelineInstance } from './gocd-api/models/pipeline-instance.model'
 import { Pipeline } from './gocd-api/models/pipeline.model'
-import { getStatusFromHistory } from './utils/go-cd-utils'
+import {
+  getStatusFromHistory,
+  getStatusFromPipelineInstance
+} from './utils/go-cd-utils'
 
 export namespace State {
   export const stop$: Subject<void> = new Subject()
@@ -126,8 +124,8 @@ export namespace State {
     switchMap(pipelines =>
       from(pipelines).pipe(
         reduce((acc: PipelineAndInstance[], pipeline: Pipeline) => {
-          const instance = pipeline._embedded.instances.find(instance =>
-            instance._embedded.stages.some(stage => stage.status === 'Building')
+          const instance = pipeline._embedded.instances.find(
+            instance => getStatusFromPipelineInstance(instance) === 'Building'
           )
           return instance ? [...acc, { pipeline, instance }] : acc
         }, [])
@@ -135,7 +133,7 @@ export namespace State {
     )
   )
 
-  export const failedPipelines$ = buildingPipelineInstances$.pipe(
+  export const pipelineFailed$ = buildingPipelineInstances$.pipe(
     pairwise(),
     map(([previousPipelines, currentPipelines]) =>
       previousPipelines.filter(
@@ -157,8 +155,7 @@ export namespace State {
     switchMap(histories =>
       from(histories).pipe(
         filter((history): history is PipelineHistory => !!history),
-        filter(history => getStatusFromHistory(history) === 'Failed'),
-        toArray()
+        filter(history => getStatusFromHistory(history) === 'Failed')
       )
     )
   )
