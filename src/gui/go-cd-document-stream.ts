@@ -25,7 +25,7 @@ import { OK } from './alerts/named-actions'
 import { JobStatus } from '../gocd-api/models/job-status.model'
 import { Api } from '../api';
 
-// TODO Break this class out into GUI components and streaming
+// TODO: Break this class out into GUI components and streaming
 export class GoCdDocumentStream { 
 
   public onComplete$: Subject<void> = new Subject()

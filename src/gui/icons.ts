@@ -5,7 +5,7 @@ export interface Icon {
   dark: string
 }
 
-export namespace Icons {
+export namespace Icons { // TODO: Rewrite this ugliness.
   let context: ExtensionContext
 
   export let alert: Icon
